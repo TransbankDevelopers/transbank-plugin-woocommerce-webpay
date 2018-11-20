@@ -1,0 +1,7 @@
+FROM wordpress:4.9.8-php5.6-apache
+
+# install the PHP extensions we need
+RUN apt-get update && apt-get install -y zip unzip zlib1g-dev wget libxml2-dev libmcrypt-dev
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install soap
+RUN docker-php-ext-install mcrypt

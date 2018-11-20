@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+docker-compose up -d && \
+echo "
+========================================
+      🌎 Web server: http://localhost:8080
+      ⚙️ Admin: http://localhost:8080/wp-admin
+            user: webpay
+            password: webpay
+========================================"
