@@ -147,8 +147,32 @@ function woocommerce_transbank_init() {
         /**
          * Pagina Receptora
          **/
-        function receipt_page($order) {
-            echo $this->generate_transbank_payment($order);
+        function receipt_page($order_id) {
+
+            $order = new WC_Order($order_id);
+            $amount = (int) number_format($order->get_total(), 0, ',', '');
+            $sessionId = uniqid();
+            $buyOrder = $order_id;
+            $returnUrl = self::$URL_RETURN;
+            $finalUrl = str_replace("_URL_",
+                        add_query_arg( 'key', $order->get_order_key(), $order->get_checkout_order_received_url()), self::$URL_FINAL);
+
+            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
+            $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
+
+            if (isset($result["token_ws"])) {
+
+                $url = $result["url"];
+                $token_ws = $result["token_ws"];
+
+                self::redirect($url, array("token_ws" => $token_ws));
+                exit;
+
+            } else {
+                wc_add_notice( __('ERROR: ', 'woothemes') .
+                    'Ocurri&oacute; un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
+                    'error');
+            }
         }
 
         /**
@@ -179,13 +203,12 @@ function woocommerce_transbank_init() {
             $order_info = new WC_Order();
 
             if (is_object($result) && $result->buyOrder) {
+
                 $order_info = new WC_Order($result->buyOrder);
+
                 WC()->session->set($order_info->get_order_key(), $result);
 
-                if (
-                    ($result->VCI == "TSY" || $result->VCI == "") &&
-                    $result->detailOutput->responseCode == 0
-                ) {
+                if (($result->VCI == "TSY" || $result->VCI == "") && $result->detailOutput->responseCode == 0) {
                     $voucher = true;
                     WC()->session->set($order_info->get_order_key() . "_transaction_paid", 1);
 
@@ -194,22 +217,16 @@ function woocommerce_transbank_init() {
                     );
                     $order_info->update_status('completed');
                     $order_info->reduce_order_stock();
-                    self::redirect($result->urlRedirection, array(
-                        "token_ws" => $token_ws
-                    ));
+                    self::redirect($result->urlRedirection, array("token_ws" => $token_ws));
                     die();
                 }
             }
 
-            $error_message =
-                "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
+            $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
             wc_add_notice(__('ERROR: ', 'woothemes') . $error_message, 'error');
 
             $redirectOrderReceived = $order_info->get_checkout_payment_url();
-            self::redirect($redirectOrderReceived, array(
-                "token_ws" => $token_ws
-            ));
-
+            self::redirect($redirectOrderReceived, array("token_ws" => $token_ws));
             die();
         }
 
@@ -226,37 +243,6 @@ function woocommerce_transbank_init() {
                 "<script language='JavaScript'>" .
                 "document.webpayForm.submit();" .
                 "</script>";
-        }
-
-        function generate_transbank_payment($order_id) {
-
-            $order = new WC_Order($order_id);
-            $amount = (int) number_format($order->get_total(), 0, ',', '');
-            $sessionId = uniqid();
-            $buyOrder = $order_id;
-            $returnUrl = self::$URL_RETURN;
-            $finalUrl = str_replace("_URL_",
-                        add_query_arg( 'key', $order->get_order_key(), $order->get_checkout_order_received_url()), self::$URL_FINAL);
-
-            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
-            $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
-
-            if (isset($result["token_ws"])) {
-
-                $url = $result["url"];
-                $token = $result["token_ws"];
-
-                echo "<br/>Gracias por su pedido, por favor haga clic en el bot&oacute;n de abajo para pagar con WebPay.<br/><br/>";
-
-                return '<form action="' . $url . '" method="post">' .
-                    '<input type="hidden" name="token_ws" value="' . $token . '"></input>' .
-                    '<input type="submit" value="WebPay"></input>' .
-                    '</form>';
-            } else {
-                wc_add_notice( __('ERROR: ', 'woothemes') .
-                    'Ocurri&oacute; un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
-                    'error');
-            }
         }
 
         /**
@@ -693,7 +679,7 @@ function woocommerce_transbank_init() {
                                                     </select> Mb</td>
                                                 </tr>
                                             </table>
-                                            <div class="tbk_btn tbk_danger_btn" onclick="swap_action()" href="" target="_blank">
+                                            <div class="tbk_btn tbk_danger_btn" onclick="javascript:updateConfig()" href="" target="_blank">
                                                 Actualizar Parametros
                                             </div>
                                         </div>
@@ -766,8 +752,7 @@ function woocommerce_transbank_init() {
 				</div>
 			</div>
 			<script type="text/javascript">
-				function swap_action(){
-					console.log('calling swap_action()');
+				function updateConfig(){
 				}
 			</script>
 			<?php
@@ -833,11 +818,7 @@ function woocommerce_transbank_init() {
         $date_accepted = new DateTime($finalResponse->transactionDate);
 
         if ($finalResponse != null) {
-            echo /*'<tr>' .
-            '<th scope="row">Tipo de Cuotas:</th>' .
-            '<td><span class="TP"></span></td>' .
-            '</tr>' .*/
-                '</br><h2>Detalles del pago</h2>' .
+            echo '</br><h2>Detalles del pago</h2>' .
                     '<table class="shop_table order_details">' .
                     '<tfoot>' .
                     '<tr>' .
@@ -901,4 +882,13 @@ function woocommerce_transbank_init() {
 
     add_action('woocommerce_thankyou', 'pay_content', 1);
     add_filter('woocommerce_payment_gateways','woocommerce_add_transbank_gateway');
+
+    add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links' );
+
+    function add_action_links ( $links ) {
+        $newLinks = array(
+            '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=transbank' ) . '">Settings</a>',
+        );
+        return array_merge( $links, $newLinks );
+    }
 }

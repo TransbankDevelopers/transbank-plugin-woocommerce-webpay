@@ -150,7 +150,7 @@ class HealthCheck {
             } else {
                 $actualversion = $woocommerce->version;
                 $lastversion = $this->getLastGitHubReleaseVersion('woocommerce/woocommerce');
-                $file = ABSPATH . "/wp-content/plugins/woocommerce-transbank/class-wc-transbank.php";
+                $file = ABSPATH . "/wp-content/plugins/woocommerce-transbank/webpay.php";
                 $search = " * Version:";
                 $lines = file($file);
                 foreach ($lines as $line) {

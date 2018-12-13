@@ -1,11 +1,9 @@
 <?php
 
+require_once('../../../../wp-load.php');
+
 use \Transbank\Webpay\Webpay;
 use \Transbank\Webpay\Configuration;
-
-//cat wp-content/plugins/woocommerce/includes/class-wc-payment-gateways.php
-
-require_once('../../../../wp-load.php');
 
 class ConfigProvider extends WC_Payment_Gateway {
 
