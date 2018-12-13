@@ -10,18 +10,19 @@ fi
 
 SRC_DIR="woocommerce-transbank"
 FILE1="class-wc-transbank.php"
-DOCKER_DIR="docker-php5.6"
 
-cd $DOCKER_DIR
-docker-compose run --rm -w /var/www/html/wp-content/plugins/woocommerce-transbank webserver composer install --no-dev
-docker-compose run --rm -w /var/www/html/wp-content/plugins/woocommerce-transbank webserver composer update --no-dev
+cd $SRC_DIR
+composer install --no-dev
+composer update --no-dev
 cd ..
 
 sed -i.bkp "s/Version: 2.0.4/Version: ${TRAVIS_TAG#"v"}/g" "$SRC_DIR/$FILE1"
 
 PLUGIN_FILE="plugin-woocommerce-webpay-$TRAVIS_TAG.zip"
 
-zip -FSr $PLUGIN_FILE $SRC_DIR -x composer.json composer.lock "$FILE1.bkp"
+cd $SRC_DIR
+zip -FSr ../$PLUGIN_FILE . -x composer.json composer.lock "$FILE1.bkp"
+cd ..
 
 cp "$SRC_DIR/$FILE1.bkp" "$SRC_DIR/$FILE1"
 rm "$SRC_DIR/$FILE1.bkp"

@@ -3,22 +3,22 @@
 use \Transbank\Webpay\Webpay;
 use \Transbank\Webpay\Configuration;
 
-if (!class_exists("WC_Payment_Gateway")) {
-    require_once ($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
-}
+//cat wp-content/plugins/woocommerce/includes/class-wc-payment-gateways.php
 
-class WoocommerceConfigProvider extends WC_Payment_Gateway {
+require_once('../../../../wp-load.php');
+
+class ConfigProvider extends WC_Payment_Gateway {
+
     public function __construct() {
         $this->id = 'transbank';
     }
 
-    public function getWoocommerceOption($option) {
+    public function getConfig($option) {
         $value = $this->get_option($option);
-        if (!empty($value))
+        if (!empty($value)) {
             return $value;
-
+        }
         $config = Configuration::forTestingWebpayPlusNormal();
-
         switch ($option) {
             case 'webpay_test_mode':
                 return Webpay::INTEGRACION;
@@ -31,7 +31,6 @@ class WoocommerceConfigProvider extends WC_Payment_Gateway {
             case 'webpay_webpay_cert':
                 return $config->getWebpayCert();
         }
-
-        return -500;
+        return null;
     }
 }

@@ -1,50 +1,34 @@
 <?php
 define('Webpay_ROOT', dirname(__DIR__));
 
-class LogHandler
-{
+class LogHandler {
+
     //constants for log handler
     const LOG_DEBUG_ENABLED = false; //enable or disable debug logs
     const LOG_INFO_ENABLED = true; //enable or disable info logs
     const LOG_ERROR_ENABLED = true; //enable or disable error logs
 
-    private $timestamp;
-    private $idTransaction;
-    private $method;
-    private $request;
-    private $response;
     private $logFile;
     private $logDir;
     private $ecommerce;
     private $configuration;
-    private $l4php;
 
-    function __construct($ecommerce = 'woocommerce', $days = 7, $weight = '2MB')
-    {
-        $this->timestamp = null;
-        $this->idTransaction = null;
-        $this->method = null;
-        $this->request = null;
-        $this->reponse = null;
-        $this->logFile = null;
+    function __construct($ecommerce = 'woocommerce', $days = 7, $weight = '2MB') {
         $this->ecommerce = $ecommerce;
-        $this->logURL = null;
         $this->lockfile = Webpay_ROOT . "/set_logs_activate.lock";
         $dia = date('Y-m-d');
         $this->confdays = $days;
         $this->confweight = $weight;
         $this->logDir = ABSPATH . "log/Transbank_webpay";
         $this->logURL = str_replace($_SERVER['DOCUMENT_ROOT'], "/", $this->logDir);
+        $this->logFile = "{$this->logDir}/log_transbank_{$this->ecommerce}_{$dia}.log";
 
         try {
             if (!file_exists($this->logDir)) {
                 mkdir($this->logDir, 0777, true);
             }
         } catch(Exception $e) {
-            $this->log->logError($e->getMessage());
         }
-
-        $this->logFile = "{$this->logDir}/log_transbank_{$this->ecommerce}_{$dia}.log";
 
         $this->configuration = array(
             'appenders' => array(
@@ -65,17 +49,14 @@ class LogHandler
             ),
             'rootLogger' => array(
                 'appenders' => array('default'),
-            ),
+            )
         );
-
 
         Logger::configure($this->configuration);
         $this->logger = Logger::getLogger('main');
-
     }
 
-    private function formatBytes($path)
-    {
+    private function formatBytes($path) {
         $bytes = sprintf('%u', filesize($path));
 
         if ($bytes > 0) {
@@ -89,9 +70,7 @@ class LogHandler
         return $bytes;
     }
 
-
-    private function getIsLogDir()
-    {
+    private function getIsLogDir() {
         if (!file_exists($this->logDir)) {
             return false;
         } else {
@@ -99,17 +78,13 @@ class LogHandler
         }
     }
 
-    private function setMakeLogDir()
-    {
+    private function setMakeLogDir() {
         if ($this->getIsLogDir() === false) {
             mkdir($this->logDir, 0777, true);
-        } else {
-            exit;
         }
     }
 
-    private function setparamsconf($days, $weight)
-    {
+    private function setparamsconf($days, $weight) {
         if (file_exists($this->lockfile)) {
             $file = fopen($this->lockfile, "w") or die("No se puede truncar archivo");
             if (!is_numeric($days) or $days == null or $days == '' or $days === false) {
@@ -121,13 +96,10 @@ class LogHandler
             fwrite($file, $txt);
             fclose($file);
             chmod($this->lockfile, 0600);
-        } else {
-            exit;
         }
     }
 
-    private function setLockFile()
-    {
+    private function setLockFile() {
         if (!file_exists($this->lockfile)) {
             $file = fopen($this->lockfile, "w") or die("No se puede crear archivo de bloqueo");
             if (!is_numeric($this->confdays) or $this->confdays == null or $this->confdays == '' or $this->confdays === false) {
@@ -145,8 +117,7 @@ class LogHandler
         }
     }
 
-    public function getValidateLockFile()
-    {
+    public function getValidateLockFile() {
         if (!file_exists($this->lockfile)) {
             $result = array(
                 'status' => false,
@@ -169,17 +140,13 @@ class LogHandler
         return $result;
     }
 
-    private function delLockFile()
-    {
-        if (!file_exists($this->lockfile)) {
-            // exit;
-        } else {
+    private function delLockFile() {
+        if (file_exists($this->lockfile)) {
             unlink($this->lockfile);
         }
     }
 
-    private function setLogList()
-    {
+    private function setLogList() {
         $arr = array_diff(scandir($this->logDir), array('.', '..'));
 
         foreach ($arr as $key => $value) {
@@ -191,12 +158,10 @@ class LogHandler
         } else {
             $this->logList = null;
         }
-
         return $this->logList;
     }
 
-    private function setLastLog()
-    {
+    private function setLastLog() {
         $files = glob($this->logDir . "/*.log");
         if (!$files) {
             return array("No existen Logs disponibles");
@@ -206,7 +171,6 @@ class LogHandler
         $this->lastLog = key($files);
         if (isset($this->lastLog)) {
             $var = file_get_contents($this->lastLog);
-
         } else {
             $var = null;
         }
@@ -219,8 +183,7 @@ class LogHandler
         return $return;
     }
 
-    private function readLogByFile($filename)
-    {
+    private function readLogByFile($filename) {
         $var = file_get_contents($this->logDir . "/" . $filename);
         $return = array(
             'log_file' => $filename,
@@ -229,8 +192,7 @@ class LogHandler
         return $return;
     }
 
-    private function setCountLogByFile($filename)
-    {
+    private function setCountLogByFile($filename) {
         $fp = file($this->logDir . "/" . $filename);
         $return = array(
             'log_file' => $filename,
@@ -239,10 +201,8 @@ class LogHandler
         return $return;
     }
 
-    private function setLastLogCountLines()
-    {
+    private function setLastLogCountLines() {
         $lastfile = $this->setLastLog();
-
         $fp = file($this->logDir . "/" . $lastfile['log_file']);
         $return = array(
             'log_file' => basename($lastfile['log_file']),
@@ -251,8 +211,7 @@ class LogHandler
         return $return;
     }
 
-    private function setLogNewLine($args, $type)
-    {
+    private function setLogNewLine($args, $type) {
         $this->digestLogs();
         $content = "[{$args['transactionId']}] [{$args['method']}] [{$args['request']}] [{$args['response']}] ";
         if ($type === true) {
@@ -262,28 +221,23 @@ class LogHandler
         } else {
             $this->logger->warn('se ha ingresado parametro no valido en la creacion de log');
         }
-
     }
 
-    private function setLogDir()
-    {
+    private function setLogDir() {
         return $this->logDir;
     }
 
-    private function setLogCount()
-    {
+    private function setLogCount() {
         $count = count($this->setLogList());
         $result = array('log_count' => $count);
         return $result;
     }
 
-
     /** Funciones de mantencion de directorio de logs**/
 
     // limpieza total de directorio
 
-    private function delAllLogs()
-    {
+    private function delAllLogs() {
         if (!file_exists($this->logDir)) {
             exit;
         }
@@ -297,8 +251,7 @@ class LogHandler
     }
 
     // mantiene solo los ultimos n dias de logs
-    private function digestLogs()
-    {
+    private function digestLogs() {
         if (!file_exists($this->logDir)) {
             $this->setMakeLogDir();
         }
@@ -311,72 +264,57 @@ class LogHandler
         return true;
     }
 
-
-
-
     /**Funciones de retorno**/
 
-// Obtiene archivo de bloqueo
-    public function getLockFile()
-    {
+    // Obtiene archivo de bloqueo
+    public function getLockFile() {
         return json_encode($this->getValidateLockFile());
     }
 
-// obtiene directorio de log
-    public function getLogDir()
-    {
+    // obtiene directorio de log
+    public function getLogDir() {
         return json_encode($this->setLogDir());
     }
 
-// obtiene conteo de logs en logdir definido
-    public function getLogCount()
-    {
+    // obtiene conteo de logs en logdir definido
+    public function getLogCount() {
         return json_encode($this->setLogCount());
     }
 
-// obtiene listado de logs en logdir
-    public function getLogList()
-    {
+    // obtiene listado de logs en logdir
+    public function getLogList() {
         return json_encode($this->setLogList());
     }
 
-// obtiene ultimo log modificado (al crearse con timestamp es tambien el ultimo creado)
-    public function getLastLog()
-    {
+    // obtiene ultimo log modificado (al crearse con timestamp es tambien el ultimo creado)
+    public function getLastLog() {
         return json_encode($this->setLastLog());
     }
 
-// obtiene conteo de lineas de ultimo log creado
-    public function getLastLogCountLines()
-    {
+    // obtiene conteo de lineas de ultimo log creado
+    public function getLastLogCountLines() {
         return json_encode($this->setLastLogCountLines());
     }
 
-// obtiene log en base a parametro
-    public function getLogByFile($filename)
-    {
+    // obtiene log en base a parametro
+    public function getLogByFile($filename) {
         return json_encode($this->readLogByFile($filename));
     }
 
-// obtiene conteo de lineas de log en base a parametro
-    public function getCountLogByFile($filename)
-    {
+    // obtiene conteo de lineas de log en base a parametro
+    public function getCountLogByFile($filename) {
         return json_encode($this->setCountLogByFile($filename));
     }
 
-    public function delLogsFromDir()
-    {
+    public function delLogsFromDir() {
         $this->delAllLogs();
     }
 
-    public function delKeepOnlyLastLogs()
-    {
+    public function delKeepOnlyLastLogs() {
         $this->digestLogs();
     }
 
-
-    public function setLockStatus($status = true)
-    {
+    public function setLockStatus($status = true) {
         if ($status === true) {
             $this->setLockFile();
         } else {
@@ -384,10 +322,7 @@ class LogHandler
         }
     }
 
-
-    public function getResume()
-    {
-
+    public function getResume() {
         $result = array(
             'config' => $this->getValidateLockFile(),
             'log_dir' => $this->setLogDir(),
@@ -395,13 +330,10 @@ class LogHandler
             'logs_list' => $this->setLogList(),
             'last_log' => $this->setLastLog(),
         );
-
-        return json_encode($result, JSON_PRETTY_PRINT); // NOTE: eliminar el pretty print antes de pasar a produccion
-
+        return json_encode($result);
     }
 
-    public function setnewconfig($days, $weight)
-    {
+    public function setnewconfig($days, $weight) {
         $this->setparamsconf($days, $weight);
     }
 
