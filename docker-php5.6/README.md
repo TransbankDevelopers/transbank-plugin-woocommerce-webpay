@@ -29,8 +29,7 @@ Para instalar Woocommerce, hacer lo siguiente:
 ### Construir el contenedor desde cero
 
 ```
-#cd docker-php5.6
-#./build
+./build
 ```
 
 ### Iniciar el contenedor construido anteriormente
