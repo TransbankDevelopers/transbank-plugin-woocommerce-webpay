@@ -9,7 +9,7 @@ then
 fi
 
 SRC_DIR="woocommerce-transbank"
-FILE1="class-wc-transbank.php"
+FILE1="webpay.php"
 
 cd $SRC_DIR
 composer install --no-dev
