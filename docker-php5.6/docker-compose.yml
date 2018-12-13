@@ -16,7 +16,7 @@ services:
     depends_on:
     - dbserver
     ports:
-    - 8080:80
+    - 8082:80
 
   dbserver:
     container_name: mysql

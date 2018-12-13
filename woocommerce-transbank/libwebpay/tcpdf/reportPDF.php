@@ -1,6 +1,4 @@
 <?php
-	require_once('TCPDF/tcpdf.php');
-
 	class reportPDF{
 		var $buffer;
 

@@ -9,6 +9,7 @@
 			$this->ecommerce = $ecommerce;
 			$this->document = $document;
 		}
+
 		function getReport($myJSON){
 			$log = new loghandler($this->ecommerce);
 			$json = json_decode($log->getLastLog(),true);

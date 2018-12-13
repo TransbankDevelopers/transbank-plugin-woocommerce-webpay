@@ -8,7 +8,6 @@ RUN php -r "unlink('/composer-setup.php');"
 RUN php -r "unlink('/composer-setup.sig');"
 
 # install the PHP extensions we need
-RUN apt-get update && apt-get install -y zip unzip zlib1g-dev wget libxml2-dev libmcrypt-dev
+RUN apt-get update && apt-get install -y zip unzip zlib1g-dev wget libxml2-dev
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install soap
-RUN docker-php-ext-install mcrypt

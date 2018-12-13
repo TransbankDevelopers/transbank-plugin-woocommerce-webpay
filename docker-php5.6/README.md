@@ -47,10 +47,10 @@ Para instalar Woocommerce, hacer lo siguiente:
 
 ### Paneles
 
-**Web server:** http://localhost:8080
+**Web server:** http://localhost:8082
 
-**Admin:** http://localhost:8080/wp-admin
+**Admin:** http://localhost:8082/wp-admin
 
-    user: webpay
-    password: webpay
+    user: admin
+    password: admin
 
