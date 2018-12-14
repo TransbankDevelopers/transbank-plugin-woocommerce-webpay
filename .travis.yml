@@ -1,0 +1,19 @@
+language: php
+php:
+- '5.6'
+
+script: echo "We don't have tests yet :("
+
+before_deploy:
+- sh package.sh
+
+deploy:
+  provider: releases
+  name: "$TRAVIS_TAG"
+  api_key:
+    secure: ql//Tpk6srv/QnMMLkDcDpXsPd/Rc13/1mtspD8Rfq0YjqpEX8TztmrvF/PFYpnAO5U3HQXvdjFFojNCwLDhaqIDL7Snh0HOBzSEVh4lCKhD3gF3ESjZItSeQJxV4oSkkLhbDygr7szciQxjOFDq0ToIIZ5L5hUFtlHbZ2BaMkUTn1B9rGCfvROoCPDrHP1lpuAzytySNsOOGlx2kSeou6Qlsuqf1LWkU1YY4E3aBxQAUKV2sK7GvgqJwTWoR8DUhLi38o3Ug26Uwnx/WiRtY5MjOvUVSXcmBcpgF+PefmiUgJ7Y2NU0lyMzxozxSM8Y7KV4/He2Mo5WFxjHFL/be/gZl6rMqlPAS7FWJ9WCAKHlqzGl8yimKQJR7PgxfDlfjKcGSq+pfu1aDLfrxjmmitCOy923XPTxsjEhvKX0Ts3FMGkjC8By64xpjiOhFMpFzKu5WO7ySEloRSP0TOI8La3W5+bQHKPQJWPxyXtOYuxbl3V19AZjD+OUrb9A7QAIDgcHa1vyY4XDY0Z2wVAiEY9M2aXR6h1xee15JVvOHcNfUgAxSvrOLacQ2f7jwXXGjVIWCafjAhz40DNLlR/0DyYc8nsUZXV9nBO45pjLCy/hTM3M1rCWhCatLJ7qK+vMohpHUBDJYr2gMSbzRokeYpbFOg9lpzRzxdMJ2hDd4dQ=
+  file: "woocommerce-transbank.zip"
+  skip_cleanup: true
+  on:
+    repo: TransbankDevelopers/transbank-plugin-woocommerce-webpay
+    tags: true
