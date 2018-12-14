@@ -27,6 +27,6 @@ ehthumbs_vista.db
 
 vendor
 
-plugin-woocommerce-webpay-**
+woocommerce-transbank**
 
 composer.lock

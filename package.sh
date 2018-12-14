@@ -18,7 +18,7 @@ cd ..
 
 sed -i.bkp "s/Version: 2.0.4/Version: ${TRAVIS_TAG#"v"}/g" "$SRC_DIR/$FILE1"
 
-PLUGIN_FILE="plugin-woocommerce-webpay-$TRAVIS_TAG.zip"
+PLUGIN_FILE="woocommerce-transbank.zip"
 
 cd $SRC_DIR
 zip -FSr ../$PLUGIN_FILE . -x composer.json composer.lock "$FILE1.bkp"

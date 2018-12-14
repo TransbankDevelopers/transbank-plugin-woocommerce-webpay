@@ -4,6 +4,14 @@ if (!defined('ABSPATH')) {
 } // Exit if accessed directly
 
 /**
+ * The plugin bootstrap file
+ *
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @wordpress-plugin
  * Plugin Name: Transbank Webpay Plus
  * Plugin URI: https://www.transbankdevelopers.cl/plugin/woocommerce/webpay
  * Description: Recibe pagos en l&iacute;nea con Tarjetas de Cr&eacute;dito y Redcompra en tu WooCommerce a trav&eacute;s de Webpay Plus.
@@ -212,9 +220,7 @@ function woocommerce_transbank_init() {
                     $voucher = true;
                     WC()->session->set($order_info->get_order_key() . "_transaction_paid", 1);
 
-                    $order_info->add_order_note(
-                        __('Pago con WEBPAY PLUS', 'woocommerce')
-                    );
+                    $order_info->add_order_note(__('Pago con WEBPAY PLUS', 'woocommerce'));
                     $order_info->update_status('completed');
                     $order_info->reduce_order_stock();
                     self::redirect($result->urlRedirection, array("token_ws" => $token_ws));
@@ -803,21 +809,26 @@ function woocommerce_transbank_init() {
         WC()->session->set($order_info->get_order_key(), "");
 
         $paymentTypeCode = $finalResponse->detailOutput->paymentTypeCode;
-        $paymenCodeResult =
-            $transbank_data->config['VENTA_DESC'][$paymentTypeCode];
+        $paymenCodeResult = $transbank_data->config['VENTA_DESC'][$paymentTypeCode];
 
         if ($finalResponse->detailOutput->responseCode == 0) {
             $transactionResponse = "Aceptado";
         } else {
-            $transactionResponse =
-                "Rechazado [" .
-                $finalResponse->detailOutput->responseCode .
-                "]";
+            $transactionResponse = "Rechazado [" . $finalResponse->detailOutput->responseCode . "]";
         }
 
         $date_accepted = new DateTime($finalResponse->transactionDate);
 
         if ($finalResponse != null) {
+
+            update_post_meta($order_id, 'transactionResponse', $transactionResponse);
+            update_post_meta($order_id, 'buyOrder', $finalResponse->buyOrder);
+            update_post_meta($order_id, 'authorizationCode', $finalResponse->detailOutput->authorizationCode);
+            update_post_meta($order_id, 'cardNumber', $finalResponse->cardDetail->cardNumber);
+            update_post_meta($order_id, 'paymenCodeResult', $paymenCodeResult);
+            update_post_meta($order_id, 'amount', $finalResponse->detailOutput->amount);
+            update_post_meta($order_id, 'coutas', $finalResponse->detailOutput->sharesNumber);
+
             echo '</br><h2>Detalles del pago</h2>' .
                     '<table class="shop_table order_details">' .
                     '<tfoot>' .
