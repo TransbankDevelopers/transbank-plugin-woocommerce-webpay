@@ -53,6 +53,8 @@ function woocommerce_transbank_init() {
             $this->title = 'Transbank Webpay';
             $this->description = 'Permite el pago de productos y/o servicios, con Tarjetas de Cr&eacute;dito y Redcompra a trav&eacute;s de Webpay Plus';
 
+            $this->log = new LogHandler();
+
             $certificates = include 'libwebpay/certificates.php';
             $webpay_commerce_code = $certificates['commerce_code'];
             $webpay_private_key = $certificates['private_key'];
@@ -60,11 +62,11 @@ function woocommerce_transbank_init() {
             $webpay_webpay_cert = (new TransbankSdkWebpay(null))->getWebPayCertDefault();
 
             $this->config = array(
-                "MODO" => $this->get_option('webpay_test_mode', 'INTEGRATION'),
-                "COMMERCE_CODE" => $this->get_option('webpay_commerce_code', $webpay_commerce_code),
-                "PRIVATE_KEY" => str_replace("<br/>", "\n", $webpay_private_key),//$this->get_option('webpay_private_key', $webpay_private_key),
-                "PUBLIC_CERT" => str_replace("<br/>", "\n", $webpay_public_cert),//$this->get_option('webpay_public_cert', $webpay_public_cert),
-                "WEBPAY_CERT" => str_replace("<br/>", "\n", $webpay_webpay_cert),//$this->get_option('webpay_webpay_cert', $webpay_webpay_cert),
+                "MODO" => trim($this->get_option('webpay_test_mode', 'INTEGRATION')),
+                "COMMERCE_CODE" => trim($this->get_option('webpay_commerce_code', $webpay_commerce_code)),
+                "PRIVATE_KEY" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_private_key', $webpay_private_key))),
+                "PUBLIC_CERT" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_public_cert', $webpay_public_cert))),
+                "WEBPAY_CERT" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_webpay_cert', $webpay_webpay_cert))),
                 "URL_RETURN" => home_url('/') . '?wc-api=WC_Gateway_' . $this->id,
                 "URL_FINAL" => "_URL_",
                 "ECOMMERCE" => 'woocommerce',
@@ -88,8 +90,6 @@ function woocommerce_transbank_init() {
             add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'check_ipn_response'));
-
-            $this->log = new LogHandler();
 
             if (!$this->is_valid_for_use()) {
                 $this->enabled = false;
