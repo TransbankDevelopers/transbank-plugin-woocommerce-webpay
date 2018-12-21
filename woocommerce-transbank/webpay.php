@@ -165,6 +165,9 @@ function woocommerce_transbank_init() {
             $finalUrl = str_replace("_URL_",
                         add_query_arg( 'key', $order->get_order_key(), $order->get_checkout_order_received_url()), self::$URL_FINAL);
 
+            $returnUrl = $returnUrl . '&orid=' . $order_id;
+            $finalUrl = $finalUrl . '&orid=' . $order_id;
+
             $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
             $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
 
@@ -201,26 +204,24 @@ function woocommerce_transbank_init() {
          **/
         public function check_ipn_request_is_valid($data) {
 
-            $voucher = false;
-
             $token_ws = isset($data["token_ws"]) ? $data["token_ws"] : null;
 
             $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
             $result = $transbankSdkWebpay->commitTransaction($token_ws);
 
-            $order_info = new WC_Order();
+            $order_id = $_GET['orid'];
+            $order_info = new WC_Order($order_id);
 
-            if (is_object($result) && $result->buyOrder) {
-
-                $order_info = new WC_Order($result->buyOrder);
+            if (is_object($result) && isset($result->buyOrder)) {
 
                 WC()->session->set($order_info->get_order_key(), $result);
 
                 if (($result->VCI == "TSY" || $result->VCI == "") && $result->detailOutput->responseCode == 0) {
-                    $voucher = true;
+
                     WC()->session->set($order_info->get_order_key() . "_transaction_paid", 1);
 
-                    $order_info->add_order_note(__('Pago con WEBPAY PLUS', 'woocommerce'));
+                    $order_info->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
+                    $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
                     $order_info->update_status('completed');
                     $order_info->reduce_order_stock();
                     self::redirect($result->urlRedirection, array("token_ws" => $token_ws));
@@ -228,11 +229,15 @@ function woocommerce_transbank_init() {
                 }
             }
 
+            $order_info = new WC_Order($order_id);
+            $order_info->add_order_note(__('Pago rechazado con Webpay Plus', 'woocommerce'));
+            $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
+            $order_info->update_status('failed');
+
             $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
             wc_add_notice(__('ERROR: ', 'woothemes') . $error_message, 'error');
 
-            $redirectOrderReceived = $order_info->get_checkout_payment_url();
-            self::redirect($redirectOrderReceived, array("token_ws" => $token_ws));
+            self::redirect($order_info->get_checkout_payment_url(), array("token_ws" => $token_ws));
             die();
         }
 
@@ -558,71 +563,57 @@ function woocommerce_transbank_init() {
 										</tr>
 									</table>
 									<br>
-									<h3 class="tbk_title_h3">Validación Transacción</h3>
-									<h4 class="tbk_table_title">General</h4>
-									<table class="tbk_table_info">
-										<tr>
-											<td>
-                                                <div title="Informa el estado de la comunicación con Transbank mediante método init_transaction" class="label label-info">?</div>
-                                                <strong>Estado: </strong></td>
-											<td class="tbk_table_td">
-                                                <span class="label
-                                                <?php if ($datos_hc->validate_init_transaction->status->string == 'OK') {
-                                                    echo 'label-success';
-                                                } else {
-                                                    echo 'label-danger';
-                                                } ?>">
-												<?php echo $datos_hc->validate_init_transaction->status->string; ?>
-											</span></td>
-										</tr>
-									</table>
-									<hr>
-									<h4 class="tbk_table_title">Respuesta</h4>
-									<table class="tbk_table_info">
-										<tr>
-											<?php if ($datos_hc->validate_init_transaction->status->string == 'OK') {
-                                            echo '
-                                                        <td>
-                                                            <div title="URL entregada por Transbank para realizar la transacción" class="label label-info">?</div>
-                                                            <strong>URL: </strong>
-                                                        </td>
-														<td class="tbk_table_trans">' .
-                                                            $datos_hc->validate_init_transaction->response->url .
-                                                        '</td>
-													</tr>
-													<tr>
-                                                        <td>
-                                                            <div title="Token entregada por Transbank para realizar la transacción" class="label label-info">?</div>
-                                                            <strong>Token: </strong>
-                                                        </td>
-                                                        <td class="tbk_table_trans">
-                                                            <code>' .
-                                                                $datos_hc->validate_init_transaction->response->token_ws .
-                                                            '</code>
-                                                        </td>';
-                                            } else {
-                                            echo '
-                                                        <td>
-                                                            <div title="Mensaje de error devuelto por Transbank al fallar init_transaction" class="label label-info">?</div>
-                                                            <strong>Error: </strong>
-                                                        </td>
-														<td class="tbk_table_trans">' .
-                                                            $datos_hc->validate_init_transaction->response->error .
-                                                        '</td>
-													</tr>
-													<tr>
-                                                        <td>
-                                                            <div title="Detalle del error devuelto por Transbank al fallar init_transaction" class="label label-info">?</div>
-                                                            <strong>Detalle: </strong>
-                                                        </td>
-                                                        <td class="tbk_table_trans">
-                                                            <code>' .
-                                                                $datos_hc->validate_init_transaction->response->detail .
-                                                            '</code>
-                                                        </td>';
-                                            } ?>
-										</tr>
-									</table>
+
+                                    <h3 class="menu-head">Validaci&oacute;n Transacci&oacute;n</h3>
+                                    <h4>Petici&oacute;n a Transbank</h4>
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <button class="check_conn btn btn-sm btn-primary">Verificar Conexión</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <hr>
+                                    <h4>Respuesta de Transbank</h4>
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr id="row_response_status" style="display:none">
+                                                <td>
+                                                    <div title="Informa el estado de la comunicación con Transbank mediante método init_transaction" class="label label-info">?</div> <strong>Estado: </strong>
+                                                </td>
+                                                <td>
+                                                    <span id="row_response_status_text" class="label tbk_table_trans" style="display:none"></span>
+                                                </td>
+                                            </tr>
+                                            <tr id="row_response_url" style="display:none">
+                                                <td>
+                                                    <div title="URL entregada por Transbank para realizar la transacción" class="label label-info">?</div> <strong>URL: </strong>
+                                                </td>
+                                                <td id="row_response_url_text" class="tbk_table_trans"></td>
+                                            </tr>
+                                            <tr id="row_response_token" style="display:none">
+                                                <td>
+                                                    <div title="Token entregada por Transbank para realizar la transacción" class="label label-info">?</div> <strong>Token: </strong>
+                                                </td>
+                                                <td id="row_response_token_text" class="tbk_table_trans"></td>
+                                            </tr>
+                                            <tr id="row_error_message" style="display:none">
+                                                <td>
+                                                    <div title="Mensaje de error devuelto por Transbank al fallar init_transaction" class="label label-info">?</div> <strong>Error: </strong>
+                                                </td>
+                                                <td id="row_error_message_text" class="tbk_table_trans"></td>
+                                            </tr>
+                                            <tr id="row_error_detail" style="display:none">
+                                                <td>
+                                                    <div title="Detalle del error devuelto por Transbank al fallar init_transaction" class="label label-info">?</div> <strong>Detalle: </strong>
+                                                </td>
+                                                <td id="row_error_detail_text" class="tbk_table_trans"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
 								</div>
 
 								<div id="php_info" class="tab-pane">
@@ -759,7 +750,47 @@ function woocommerce_transbank_init() {
 			</div>
 			<script type="text/javascript">
 				function updateConfig(){
-				}
+                }
+
+                $(".check_conn").click(function(e) {
+
+                    $(".check_conn").text("Verificando ...");
+                    $("#row_response_status").hide();
+                    $("#row_response_url").hide();
+                    $("#row_response_token").hide();
+                    $("#row_error_message").hide();
+                    $("#row_error_detail").hide();
+                    $(".tbk_table_trans").empty();
+
+                    $.post('../wp-content/plugins/woocommerce-transbank/libwebpay/CheckConn.php', {}, function(response){
+
+                        $(".check_conn").text("Verificar Conexión");
+                        $("#row_response_status").show();
+                        $("#row_response_status_text").removeClass("label-success").removeClass("label-danger");
+
+                        if(response.status.string == "OK") {
+
+                            $("#row_response_status_text").addClass("label-success").text("OK").show();
+                            $("#row_response_url_text").append(response.response.url);
+                            $("#row_response_token_text").append('<pre>'+response.response.token_ws+'</pre>');
+
+                            $("#row_response_url").show();
+                            $("#row_response_token").show();
+
+                        } else {
+
+                            $("#row_response_status_text").addClass("label-danger").text("ERROR").show();
+                            $("#row_error_message_text").append(response.response.error);
+                            $("#row_error_detail_text").append('<pre>'+response.response.detail+'</pre>');
+
+                            $("#row_error_message").show();
+                            $("#row_error_detail").show();
+                        }
+
+                    },'json');
+
+                    e.preventDefault();
+                });
 			</script>
 			<?php
         }
@@ -781,24 +812,18 @@ function woocommerce_transbank_init() {
         $transbank_data = new WC_Gateway_transbank();
 
         if ($order_info->get_payment_method_title() == $transbank_data->title) {
-            if (
-                WC()->session->get(
-                    $order_info->get_order_key() . "_transaction_paid"
-                ) == "" &&
-                WC()->session->get($order_info->get_order_key()) == ""
-            ) {
-                wc_add_notice(
-                    __('Compra <strong>Anulada</strong>', 'woocommerce') .
-                        ' por usuario. Recuerda que puedes pagar o
-                    cancelar tu compra cuando lo desees desde <a href="' .
-                        wc_get_page_permalink('myaccount') .
-                        '">' .
-                        __('Tu Cuenta', 'woocommerce') .
-                        '</a>',
+            if (WC()->session->get($order_info->get_order_key() . "_transaction_paid") == "" &&
+                WC()->session->get($order_info->get_order_key()) == "") {
+
+                $order_info->add_order_note(__('Pago cancelado con Webpay Plus', 'woocommerce'));
+                $order_info->update_status('failed');
+
+                wc_add_notice(__('Compra <strong>Anulada</strong>', 'woocommerce') .
+                        ' por usuario. Recuerda que puedes pagar o cancelar tu compra cuando lo desees desde <a href="' .
+                        wc_get_page_permalink('myaccount') . '">' . __('Tu Cuenta', 'woocommerce') . '</a>',
                     'error'
                 );
                 wp_redirect($order_info->get_checkout_payment_url());
-
                 die();
             }
         } else {
