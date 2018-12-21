@@ -15,13 +15,11 @@ class TransbankSdkWebpay {
             $environment = isset($config["MODO"]) ? $config["MODO"] : 'INTEGRACION';
             $configuration = Configuration::forTestingWebpayPlusNormal();
             $this->log = new LogHandler();
-            if ($environment != Webpay::INTEGRACION) {
-                $configuration = new Configuration();
-                $configuration->setEnvironment(Webpay::PRODUCCION);
-                $configuration->setCommerceCode($config["COMMERCE_CODE"]);
-                $configuration->setPrivateKey($config["PRIVATE_KEY"]);
-                $configuration->setPublicCert($config["PUBLIC_CERT"]);
-            }
+            $configuration = new Configuration();
+            $configuration->setEnvironment($environment);
+            $configuration->setCommerceCode($config["COMMERCE_CODE"]);
+            $configuration->setPrivateKey($config["PRIVATE_KEY"]);
+            $configuration->setPublicCert($config["PUBLIC_CERT"]);
             if (trim($config["WEBPAY_CERT"]) != '') {
                 $this->log->logDebug($environment. ' - Usando certificado webpay definido por el usuario');
                 $configuration->setWebpayCert($config["WEBPAY_CERT"]);

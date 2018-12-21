@@ -275,7 +275,7 @@ class HealthCheck {
     private function getFullResume() {
         $this->fullResume = array(
             'validate_certificates' => $this->getValidateCertificates(),
-            'validate_init_transaction' => $this->setInitTransaction(),
+            //'validate_init_transaction' => $this->setInitTransaction(),
             'server_resume' => $this->getServerResume(),
             'php_extensions_status' => $this->getExtensionsValidate(),
             'commerce_info' => $this->getCommerceInfo(),
