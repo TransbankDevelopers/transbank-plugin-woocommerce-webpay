@@ -11,10 +11,10 @@ class TransbankSdkWebpay {
     var $transaction;
 
     function __construct($config) {
+        $this->log = new LogHandler();
         if (isset($config)) {
             $environment = isset($config["MODO"]) ? $config["MODO"] : 'INTEGRACION';
             $configuration = Configuration::forTestingWebpayPlusNormal();
-            $this->log = new LogHandler();
             $configuration = new Configuration();
             $configuration->setEnvironment($environment);
             $configuration->setCommerceCode($config["COMMERCE_CODE"]);
@@ -38,7 +38,12 @@ class TransbankSdkWebpay {
 	public function initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl) {
         $result = array();
 		try{
+            $txDate = date('d-m-Y');
+            $txTime = date('H:i:s');
+            $this->log->logInfo('initTransaction - amount: ' . $amount . ', sessionId: ' . $sessionId .
+                                ', buyOrder: ' . $buyOrder . ', txDate: ' . $txDate . ', txTime: ' . $txTime);
             $initResult = $this->transaction->initTransaction($amount, $buyOrder, $sessionId, $returnUrl, $finalUrl);
+            $this->log->logInfo('initTransaction - initResult: ' . json_encode($initResult));
             if (isset($initResult) && isset($initResult->url) && isset($initResult->token)) {
                 $result = array(
 					"url" => $initResult->url,
@@ -60,6 +65,7 @@ class TransbankSdkWebpay {
     public function commitTransaction($tokenWs) {
         $result = array();
         try{
+            $this->log->logInfo('getTransactionResult - tokenWs: ' . $tokenWs);
             if ($tokenWs == null) {
                 throw new Exception("El token webpay es requerido");
             }
