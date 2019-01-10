@@ -29,6 +29,11 @@ Para apoyar el levantamiento rápido de un ambiente de desarrollo, hemos creado 
 
 Para usarlo seguir el siguiente [README Woocommerce 3.4.0 con php 5.6](./docker-php5.6)  
 
+### Actualizar versión del SDK de Transbank
+Para actualizar la versión del SDK de Transbank se debe editar el archivo `woocommerce-transbank/composer.json` y cambiar
+el valor de la propiedad `"transbank/transbank-sdk"` por la versión que se desea instalar y luego ejecutar el bash `update`
+que esta en la carpeta `docker-woocommerce-php5.6` lo que actualizara la dependencia del plugin.
+
 ### Crear el instalador del plugin
 
     ./package.sh

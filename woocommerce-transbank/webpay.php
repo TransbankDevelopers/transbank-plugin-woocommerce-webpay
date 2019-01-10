@@ -216,7 +216,7 @@ function woocommerce_transbank_init() {
 
                 WC()->session->set($order_info->get_order_key(), $result);
 
-                if (($result->VCI == "TSY" || $result->VCI == "") && $result->detailOutput->responseCode == 0) {
+                if ($result->detailOutput->responseCode == 0) {
 
                     WC()->session->set($order_info->get_order_key() . "_transaction_paid", 1);
 
