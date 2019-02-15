@@ -62,7 +62,7 @@ function woocommerce_transbank_init() {
             $webpay_webpay_cert = (new TransbankSdkWebpay(null))->getWebPayCertDefault();
 
             $this->config = array(
-                "MODO" => trim($this->get_option('webpay_test_mode', 'INTEGRATION')),
+                "MODO" => trim($this->get_option('webpay_test_mode', 'INTEGRACION')),
                 "COMMERCE_CODE" => trim($this->get_option('webpay_commerce_code', $webpay_commerce_code)),
                 "PRIVATE_KEY" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_private_key', $webpay_private_key))),
                 "PUBLIC_CERT" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_public_cert', $webpay_public_cert))),
