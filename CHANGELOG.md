@@ -4,6 +4,11 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.6] - 2019-02-18
+### Fixed
+- Corrige problema que impide ejecutar el plugin en Integración, cuando está recién instalado.
+- Indica a WooCommerce que el plugin es compatible con la versión 3.5.4
+
 ## [2.1.5] - 2019-01-10
 ### Changed
 - Se elimina la condición de VCI == "TSY" || VCI == "" para evaluar la respuesta de getTransactionResult debido a que
