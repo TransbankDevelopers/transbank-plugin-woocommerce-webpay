@@ -18,6 +18,8 @@ if (!defined('ABSPATH')) {
  * Version: 2.0.4
  * Author: Transbank
  * Author URI: https://www.transbank.cl
+ * WC requires at least: 3.4.0
+ * WC tested up to: 3.5.4
  */
 
 add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
@@ -62,7 +64,7 @@ function woocommerce_transbank_init() {
             $webpay_webpay_cert = (new TransbankSdkWebpay(null))->getWebPayCertDefault();
 
             $this->config = array(
-                "MODO" => trim($this->get_option('webpay_test_mode', 'INTEGRATION')),
+                "MODO" => trim($this->get_option('webpay_test_mode', 'INTEGRACION')),
                 "COMMERCE_CODE" => trim($this->get_option('webpay_commerce_code', $webpay_commerce_code)),
                 "PRIVATE_KEY" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_private_key', $webpay_private_key))),
                 "PUBLIC_CERT" => trim(str_replace("<br/>", "\n", $this->get_option('webpay_public_cert', $webpay_public_cert))),
