@@ -8,6 +8,8 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 ### Fixed
 - Corrige problema que impide ejecutar el plugin en Integración, cuando está recién instalado.
 - Indica a WooCommerce que el plugin es compatible con la versión 3.5.4
+### Changed
+- Al recibir el pago de forma exitósa, el estado de la compra pasa a "Processing" en vez de "Completed".
 
 ## [2.1.5] - 2019-01-10
 ### Changed
