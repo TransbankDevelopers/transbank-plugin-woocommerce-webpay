@@ -225,7 +225,7 @@ function woocommerce_transbank_init() {
                     $order_info->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
                     $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
                     $order_info->update_status('processing');
-                    $order_info->reduce_order_stock();
+                    wc_reduce_stock_levels($order_id);
                     self::redirect($result->urlRedirection, array("token_ws" => $token_ws));
                     die();
                 }
