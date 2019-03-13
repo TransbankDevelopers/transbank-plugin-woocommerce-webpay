@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2019-03-13
+### Fixed
+- Corrige función que controla la reducción de stock (se estaba utilizando una función actualmente deprecada).
+
 ## [2.2.0] - 2019-02-18
 ### Fixed
 - Corrige problema que impide ejecutar el plugin en Integración, cuando está recién instalado.
