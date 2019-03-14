@@ -841,7 +841,7 @@ function woocommerce_transbank_init() {
         if ($finalResponse->detailOutput->responseCode == 0) {
             $transactionResponse = "Transacci&oacute;n Aprobada";
         } else {
-            $transactionResponse = "Transacci&oacute;n Rechazada [" . $finalResponse->detailOutput->responseCode . "]";
+            $transactionResponse = "Transacci&oacute;n Rechazada";
         }
 
         $date_accepted = new DateTime($finalResponse->transactionDate);
