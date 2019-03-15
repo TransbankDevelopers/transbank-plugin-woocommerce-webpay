@@ -855,14 +855,14 @@ function woocommerce_transbank_init() {
             update_post_meta($order_id, 'paymenCodeResult', $paymenCodeResult);
             update_post_meta($order_id, 'amount', $finalResponse->detailOutput->amount);
             update_post_meta($order_id, 'coutas', $finalResponse->detailOutput->sharesNumber);
-
+            update_post_meta($order_id, 'transactionDate', $date_accepted->format('d-m-Y / H:i:s') );
+            
             echo '</br><h2>Detalles del pago</h2>' .
                     '<table class="shop_table order_details">' .
                     '<tfoot>' .
                     '<tr>' .
                     '<th scope="row">Respuesta de la Transacci&oacute;n:</th>' .
-                    '<td><span class="RT">' .
-                    $transactionResponse .
+                    '<td><span class="RT">     $transactionResponse .
                     '</span></td>' .
                     '</tr>' .
                     '<tr>' .
