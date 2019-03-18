@@ -921,7 +921,6 @@ function woocommerce_transbank_init() {
                     '</span></td>' .
                     '</tr>' .
                     '<tr>' .
-                    '<tr>' .
                     '<th scope="row">Tipo de Cuota:</th>' .
                     '<td><span class="TC">' .
                     $installmentType .
