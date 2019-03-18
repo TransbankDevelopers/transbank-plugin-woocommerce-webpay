@@ -839,14 +839,27 @@ function woocommerce_transbank_init() {
         $paymenCodeResult = $transbank_data->config['VENTA_DESC'][$paymentTypeCode];
 
         if ($finalResponse->detailOutput->responseCode == 0) {
-            $transactionResponse = "Aceptado";
+            $transactionResponse = "Transacci&oacute;n Aprobada";
         } else {
-            $transactionResponse = "Rechazado [" . $finalResponse->detailOutput->responseCode . "]";
+            $transactionResponse = "Transacci&oacute;n Rechazada";
         }
 
         $date_accepted = new DateTime($finalResponse->transactionDate);
 
         if ($finalResponse != null) {
+
+            if($paymentTypeCode == "SI" || $paymentTypeCode == "S2" ||
+                $paymentTypeCode == "NC" || $paymentTypeCode == "VC" ) {
+                $installmentType = $paymenCodeResult;
+            } else {
+                $installmentType = "Sin cuotas";
+            }
+
+            if($paymentTypeCode == "VD"){
+                $paymentType = "Débito";
+            } else {
+                $paymentType = "Crédito";
+            }
 
             update_post_meta($order_id, 'transactionResponse', $transactionResponse);
             update_post_meta($order_id, 'buyOrder', $finalResponse->buyOrder);
@@ -863,6 +876,12 @@ function woocommerce_transbank_init() {
                     '<th scope="row">Respuesta de la Transacci&oacute;n:</th>' .
                     '<td><span class="RT">' .
                     $transactionResponse .
+                    '</span></td>' .
+                    '</tr>' .
+                    '<tr>' .
+                    '<th scope="row">C&oacute;digo de la Transacci&oacute;n:</th>' .
+                    '<td><span class="CT">' .
+                    $finalResponse->detailOutput->responseCode .
                     '</span></td>' .
                     '</tr>' .
                     '<tr>' .
@@ -898,7 +917,13 @@ function woocommerce_transbank_init() {
                     '<tr>' .
                     '<th scope="row">Tipo de Pago:</th>' .
                     '<td><span class="TP">' .
-                    $paymenCodeResult .
+                    $paymentType .
+                    '</span></td>' .
+                    '</tr>' .
+                    '<tr>' .
+                    '<th scope="row">Tipo de Cuota:</th>' .
+                    '<td><span class="TC">' .
+                    $installmentType .
                     '</span></td>' .
                     '</tr>' .
                     '<tr>' .
