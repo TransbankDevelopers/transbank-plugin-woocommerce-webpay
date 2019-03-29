@@ -144,12 +144,6 @@ function woocommerce_transbank_init() {
                     'type' => 'textarea',
                     'default' => __(str_replace("<br/>", "\n", $this->config['PUBLIC_CERT']), 'woocommerce'),
                     'css' => 'font-family: monospace'
-                ),
-                'webpay_webpay_cert' => array(
-                    'title' => __('Certificado Transbank', 'woocommerce'),
-                    'type' => 'textarea',
-                    'default' => __(str_replace("<br/>", "\n", $this->config['WEBPAY_CERT']), 'woocommerce'),
-                    'css' => 'font-family: monospace'
                 )
             );
         }
