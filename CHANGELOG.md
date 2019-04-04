@@ -7,7 +7,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 ## [2.2.2] - 2019-04-04
 ### Fixed
 - Corrige configuración que solicita el certificado público de Transbank
-- Corrige despliegue de información en el detalle de la transacción realizada
+- Corrige despliegue de información en el detalle de la transacción realizada, ahora se visualiza toda la información
 
 ## [2.2.1] - 2019-03-13
 ### Fixed
