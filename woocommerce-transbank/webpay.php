@@ -226,9 +226,11 @@ function woocommerce_transbank_init() {
             }
 
             $order_info = new WC_Order($order_id);
-            $order_info->add_order_note(__('Pago rechazado con Webpay Plus', 'woocommerce'));
-            $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
-            $order_info->update_status('failed');
+            if ($$order_info->get_status() == 'pending') {
+                $order_info->add_order_note(__('Pago rechazado con Webpay Plus', 'woocommerce'));
+                $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
+                $order_info->update_status('failed');
+            }
 
             $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
             wc_add_notice(__('ERROR: ', 'woothemes') . $error_message, 'error');
