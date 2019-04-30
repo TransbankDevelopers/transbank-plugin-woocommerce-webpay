@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.3] - 2019-04-30
+### Fixed
+- Corrige problema que cambia el estado de las órdenes de procesadas a fallidas. Verifica que las orden se encuentre en estado pendiente antes de cambiar el estado.
+
 ## [2.2.2] - 2019-04-04
 ### Fixed
 - Corrige configuración, Ya no es necesario incluir el certificado de Webpay
