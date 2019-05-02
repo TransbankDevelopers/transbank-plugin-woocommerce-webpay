@@ -25,10 +25,10 @@ if (!defined('ABSPATH')) {
 add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
 
 require_once ABSPATH . "wp-includes/pluggable.php";
-require_once ABSPATH . "wp-content/plugins/woocommerce-transbank/vendor/autoload.php";
-require_once ABSPATH . "wp-content/plugins/woocommerce-transbank/libwebpay/HealthCheck.php";
-require_once ABSPATH . "wp-content/plugins/woocommerce-transbank/libwebpay/LogHandler.php";
-require_once ABSPATH . "wp-content/plugins/woocommerce-transbank/libwebpay/TransbankSdkWebpay.php";
+require_once plugin_dir_path( __FILE__ ) . "vendor/autoload.php";
+require_once plugin_dir_path( __FILE__ ) . "libwebpay/HealthCheck.php";
+require_once plugin_dir_path( __FILE__ ) . "libwebpay/LogHandler.php";
+require_once plugin_dir_path( __FILE__ ) . "libwebpay/TransbankSdkWebpay.php";
 
 function woocommerce_transbank_init() {
 
