@@ -148,7 +148,7 @@ class HealthCheck {
             } else {
                 $actualversion = $woocommerce->version;
                 $lastversion = $this->getLastGitHubReleaseVersion('woocommerce/woocommerce');
-                $file = ABSPATH . "/wp-content/plugins/woocommerce-transbank/webpay.php";
+                $file = plugin_dir_path( __DIR__ ) . "webpay.php";
                 $search = " * Version:";
                 $lines = file($file);
                 foreach ($lines as $line) {

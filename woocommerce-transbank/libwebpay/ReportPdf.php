@@ -1,5 +1,5 @@
 <?php
-require_once(ABSPATH . "wp-content/plugins/woocommerce-transbank/vendor/tecnickcom/tcpdf/tcpdf.php");
+require_once(plugin_dir_path( __DIR__ ) . "vendor/tecnickcom/tcpdf/tcpdf.php");
 
 class ReportPdf {
 
