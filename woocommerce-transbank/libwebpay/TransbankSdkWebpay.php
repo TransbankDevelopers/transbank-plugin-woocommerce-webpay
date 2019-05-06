@@ -1,6 +1,6 @@
 <?php
 
-require_once(ABSPATH . "wp-content/plugins/woocommerce-transbank/vendor/autoload.php");
+require_once(plugin_dir_path( __DIR__ ) . "vendor/autoload.php");
 require_once('LogHandler.php');
 
 use Transbank\Webpay\Configuration;
