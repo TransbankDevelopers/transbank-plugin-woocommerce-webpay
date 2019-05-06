@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.4] - 2019-05-06
+### Fixed
+- Corrige error al activar el plugin cuando es instalado con un nombre diferente. Se buscan los archivos con una ruta dinámica en base a la ruta del plugin.
+
 ## [2.2.3] - 2019-04-30
 ### Fixed
 - Corrige problema que cambia el estado de las órdenes de procesadas a fallidas. Verifica que las orden se encuentre en estado pendiente antes de cambiar el estado.
