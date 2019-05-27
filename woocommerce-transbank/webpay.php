@@ -759,7 +759,7 @@ function woocommerce_transbank_init() {
                     $("#row_error_detail").hide();
                     $(".tbk_table_trans").empty();
 
-                    $.post('<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>clibwebpay/CheckConn.php', {}, function(response){
+                    $.post('../wp-content/plugins/<?php echo plugin_basename( __DIR__ )?>/libwebpay/CheckConn.php', {}, function(response){
 
                         $(".check_conn").text("Verificar Conexión");
                         $("#row_response_status").show();
