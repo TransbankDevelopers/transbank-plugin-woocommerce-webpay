@@ -31,8 +31,9 @@ Una explicación concisa y clara de qué es lo que esperas que ocurra.
 Si aplica, agrega aquí capturas de pantalla que ayuden a explicar tu problema.
 
 **Versiones (por favor agrega aquí la siguiente información):**
-- Plugin: [e.g. 2.2.4]
-- Woocommerce: [e.g. 3.4]
+- Plugin: [ej. 2.2.4]
+- Woocommerce: [ej. 3.4]
+- PHP: [ej. 7.1]
 
 **Contexto adicional**
 
