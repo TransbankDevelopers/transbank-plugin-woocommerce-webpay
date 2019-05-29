@@ -274,8 +274,8 @@ function woocommerce_transbank_init() {
             ?>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-			<link href="<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>css/bootstrap-switch.css" rel="stylesheet">
-			<link href="<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>ccss/tbk.css" rel="stylesheet">
+			<link href="<?php echo plugin_dir_path( __FILE__ ) ?>css/bootstrap-switch.css" rel="stylesheet">
+			<link href="<?php echo plugin_dir_path( __FILE__ ) ?>ccss/tbk.css" rel="stylesheet">
 
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -308,7 +308,7 @@ function woocommerce_transbank_init() {
 									<fieldset class="tbk_info">
 										<h3 class="tbk_title_h3">Informe pdf</h3>
 										<a class="button-primary" id="tbk_pdf_button"
-                                           href="<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>clibwebpay/CreatePdf.php?document=report"
+                                           href="<?php echo plugin_dir_path( __FILE__ ) ?>clibwebpay/CreatePdf.php?document=report"
                                             target="_blank">
 											Crear PDF
 										</a>
@@ -616,7 +616,7 @@ function woocommerce_transbank_init() {
 								<div id="php_info" class="tab-pane">
                                     <fieldset class="tbk_info">
                                         <h3 class="tbk_title_h3">Informe PHP info</h3>
-                                        <a class="button-primary" href="<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>clibwebpay/CreatePdf.php?document=php_info" target="_blank">
+                                        <a class="button-primary" href="<?php echo plugin_dir_path( __FILE__ ) ?>clibwebpay/CreatePdf.php?document=php_info" target="_blank">
                                         Crear PHP info
                                         </a>
                                         <br>
@@ -759,7 +759,7 @@ function woocommerce_transbank_init() {
                     $("#row_error_detail").hide();
                     $(".tbk_table_trans").empty();
 
-                    $.post('<?php echo plugin_dir_path( plugin_dir_path( __FILE__ )) ?>clibwebpay/CheckConn.php', {}, function(response){
+                    $.post('../wp-content/plugins/<?php echo plugin_basename( __DIR__ )?>/libwebpay/CheckConn.php', {}, function(response){
 
                         $(".check_conn").text("Verificar Conexión");
                         $("#row_response_status").show();
