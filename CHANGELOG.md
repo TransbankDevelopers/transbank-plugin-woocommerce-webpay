@@ -7,6 +7,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 ## [2.2.5] - 2019-05-29
 ### Fixed
 - Corrige problema con la verificación de la conexión con Transbank en la configuración del plugin, ahora la verificación despliega el resultado correctamente.
+- Agrega fecha y hora a los campos personalizados del pedido.
 
 ## [2.2.4] - 2019-05-06
 ### Fixed
