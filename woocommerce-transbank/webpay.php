@@ -42,6 +42,7 @@ function woocommerce_transbank_init() {
         private static $URL_FINAL;
 
         var $notify_url;
+        var $plugin_url;
 
         public function __construct() {
 
@@ -54,7 +55,7 @@ function woocommerce_transbank_init() {
             $this->notify_url = add_query_arg('wc-api', 'WC_Gateway_' . $this->id, home_url('/'));
             $this->title = 'Transbank Webpay';
             $this->description = 'Permite el pago de productos y/o servicios, con Tarjetas de Cr&eacute;dito y Redcompra a trav&eacute;s de Webpay Plus';
-
+            $this->plugin_url = plugins_url('/', __FILE__);
             $this->log = new LogHandler();
 
             $certificates = include 'libwebpay/certificates.php';
@@ -308,7 +309,7 @@ function woocommerce_transbank_init() {
 									<fieldset class="tbk_info">
 										<h3 class="tbk_title_h3">Informe pdf</h3>
 										<a class="button-primary" id="tbk_pdf_button"
-                                           href="<?php echo plugin_dir_path( __FILE__ ) ?>clibwebpay/CreatePdf.php?document=report"
+                                           href="<?=$this->plugin_url?>libwebpay/CreatePdf.php?document=report"
                                             target="_blank">
 											Crear PDF
 										</a>
@@ -616,7 +617,7 @@ function woocommerce_transbank_init() {
 								<div id="php_info" class="tab-pane">
                                     <fieldset class="tbk_info">
                                         <h3 class="tbk_title_h3">Informe PHP info</h3>
-                                        <a class="button-primary" href="<?php echo plugin_dir_path( __FILE__ ) ?>clibwebpay/CreatePdf.php?document=php_info" target="_blank">
+                                        <a class="button-primary" href="<?=$this->plugin_url?>libwebpay/CreatePdf.php?document=php_info" target="_blank">
                                         Crear PHP info
                                         </a>
                                         <br>
