@@ -811,7 +811,7 @@ function woocommerce_transbank_init() {
 
         if ($order_info->get_payment_method_title() == $transbank_data->title) {
             if (WC()->session->get($order_info->get_order_key() . "_transaction_paid") == "" &&
-                WC()->session->get($order_info->get_order_key()) == "") {
+                WC()->session->get($order_info->get_order_key()) == "" && $order_info->has_status( 'pending')) {
 
                 $order_info->add_order_note(__('Pago cancelado con Webpay Plus', 'woocommerce'));
                 $order_info->update_status('failed');
