@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2019-06-26
+### Fixed
+- Corrige problema que cancela órdenes en estado procesadas. Verifica que las orden se encuentre en estado pendiente antes de cambiar el estado.
+
 ## [2.3.0] - 2019-06-10
 ### Changed
 - Se añade soporte comprobado al plugin hasta php 7.2.19 + woocommerce 3.6.3 + wordpress 5.2.1.
