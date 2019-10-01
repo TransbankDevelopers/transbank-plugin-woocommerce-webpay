@@ -80,7 +80,8 @@ function woocommerce_transbank_init() {
                     "SI" => "3 cuotas sin inter&eacute;s",
                     "S2" => "2 cuotas sin inter&eacute;s",
                     "NC" => "N cuotas sin inter&eacute;s"
-                )
+                ),
+                "STATUS_AFTER_PAYMENT" => $this->get_option('after_payment_order_status')
             );
 
             /**
@@ -145,6 +146,20 @@ function woocommerce_transbank_init() {
                     'type' => 'textarea',
                     'default' => __(str_replace("<br/>", "\n", $this->config['PUBLIC_CERT']), 'woocommerce'),
                     'css' => 'font-family: monospace'
+                ),
+                'after_payment_order_status' => array(
+                    'title' => __('Estado de pedido después del pago'),
+                    'type' => 'select',
+                    'options' => array(
+                        'wc-pending' => 'Pendiente',
+                        'wc-processing' => 'Procesando',
+                        'wc-on-hold' => 'Retenido',
+                        'wc-completed' => 'Completado',
+                        'wc-cancelled' => 'Cancelado',
+                        'wc-refunded' => 'Reembolsado',
+                        'wc-failed' => 'Fallido'
+                    ),
+                    'default' => 'wc-pending'
                 )
             );
         }
@@ -219,7 +234,9 @@ function woocommerce_transbank_init() {
 
                     $order_info->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
                     $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
-                    $order_info->update_status('processing');
+
+                    $final_status = $this->config['STATUS_AFTER_PAYMENT'];
+                    $order_info->update_status($final_status);
                     wc_reduce_stock_levels($order_id);
                     self::redirect($result->urlRedirection, array("token_ws" => $token_ws));
                     die();
