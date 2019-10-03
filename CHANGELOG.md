@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2019-10-02
+### Changed
+- Añade selección de estado por defecto de las compras una vez que se realiza el pago, en la pantalla de configuración del plugin
+
 ## [2.3.1] - 2019-06-26
 ### Fixed
 - Corrige problema que cancela órdenes en estado procesadas. Verifica que las orden se encuentre en estado pendiente antes de cambiar el estado.
