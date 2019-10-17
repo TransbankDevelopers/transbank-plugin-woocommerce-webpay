@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.3.2] - 2019-10-17
+### Fixed
+- Corrige versión del sdk utilizada, se configura para utilizar la versión 1.5.3 o mayor.
+
 ## [2.3.1] - 2019-06-26
 ### Fixed
 - Corrige problema que cancela órdenes en estado procesadas. Verifica que las orden se encuentre en estado pendiente antes de cambiar el estado.
