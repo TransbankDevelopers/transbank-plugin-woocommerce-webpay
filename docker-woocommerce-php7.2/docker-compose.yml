@@ -23,6 +23,8 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: example
+    ports:
+    - 3306:3306
 
   wplugin:
     container_name: webpay_plugin
