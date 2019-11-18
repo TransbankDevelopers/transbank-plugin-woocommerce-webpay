@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2019-11-18
+### Fixed
+- Corrige confirmación del pago de la orden de compra, permite a los integradores asociar flujos a woocommerce_payment_complete.
+
 ## [2.4.0] - 2019-10-02
 ### Changed
 - Añade selección de estado por defecto de las compras una vez que se realiza el pago, en la pantalla de configuración del plugin
