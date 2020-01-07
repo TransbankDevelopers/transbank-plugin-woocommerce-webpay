@@ -133,10 +133,13 @@ class HealthCheck {
         $content=curl_exec($ch);
         curl_close($ch);
         $con = json_decode($content, true);
-        $version = array_key_exists('tag_name',$con) ? $con['tag_name'] : '';
+        if ($con === null) {
+            return null;
+        }
+        $version = array_key_exists('tag_name', $con) ? $con['tag_name'] : '';
         return $version;
     }
-
+    
     // funcion para obtener info de cada ecommerce, si el ecommerce es incorrecto o no esta seteado se escapa como respuesta "NO APLICA"
     private function getEcommerceInfo($ecommerce) {
         if (!class_exists('WooCommerce')) {
@@ -316,4 +319,3 @@ class HealthCheck {
         return json_encode($this->setInitTransaction());
     }
 }
-?>
