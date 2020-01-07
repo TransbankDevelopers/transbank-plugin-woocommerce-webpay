@@ -33,6 +33,8 @@ require_once plugin_dir_path( __FILE__ ) . "libwebpay/HealthCheck.php";
 require_once plugin_dir_path( __FILE__ ) . "libwebpay/LogHandler.php";
 require_once plugin_dir_path( __FILE__ ) . "libwebpay/TransbankSdkWebpay.php";
 
+register_activation_hook( __FILE__, 'on_activation' );
+
 function woocommerce_transbank_init() {
     
     if (!class_exists("WC_Payment_Gateway")) {
@@ -96,7 +98,7 @@ function woocommerce_transbank_init() {
             
             add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'save_options'));
+            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'registerPluginVersion'));
             add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'check_ipn_response'));
             
             if (!$this->is_valid_for_use()) {
@@ -104,7 +106,7 @@ function woocommerce_transbank_init() {
             }
         }
         
-        public function save_options()
+        public function registerPluginVersion()
         {
             if (!$this->get_option('webpay_test_mode', 'INTEGRACION') === 'PRODUCCION') {
                 return;
@@ -1010,4 +1012,11 @@ function woocommerce_transbank_init() {
         );
         return array_merge( $links, $newLinks );
     }
+}
+
+
+function on_activation() {
+    woocommerce_transbank_init();
+    $pluginObject = new WC_Gateway_Transbank();
+    $pluginObject->registerPluginVersion();
 }
