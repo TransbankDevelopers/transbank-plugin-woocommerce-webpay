@@ -1,7 +1,5 @@
 <?php
 
-require_once('../../../../wp-load.php');
-
 use \Transbank\Webpay\Webpay;
 use \Transbank\Webpay\Configuration;
 

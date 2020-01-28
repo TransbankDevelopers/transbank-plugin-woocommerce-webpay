@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once('LogHandler.php');
 require_once('ReportPdf.php');
 

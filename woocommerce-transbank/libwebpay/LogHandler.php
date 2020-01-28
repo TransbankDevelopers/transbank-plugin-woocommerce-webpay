@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 define('Webpay_ROOT', dirname(__DIR__));
 
 class LogHandler {
