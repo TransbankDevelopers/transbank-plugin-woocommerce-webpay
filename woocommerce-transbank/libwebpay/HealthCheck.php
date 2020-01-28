@@ -1,4 +1,7 @@
 <?php
+
+use Transbank\Woocommerce\WordpressPluginVersion;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -80,7 +83,7 @@ class HealthCheck {
 
     // valida version de php
     private function getValidatephp(){
-        if (version_compare(phpversion(), '7.2.19', '<=') and version_compare(phpversion(), '5.5.0', '>=')) {
+        if (version_compare(phpversion(), '7.3', '<') and version_compare(phpversion(), '5.5.0', '>=')) {
             $this->versioninfo = array(
                 'status' => 'OK',
                 'version' => phpversion()
@@ -144,24 +147,15 @@ class HealthCheck {
     private function getEcommerceInfo($ecommerce) {
         if (!class_exists('WooCommerce')) {
             exit;
-        } else {
-            global $woocommerce;
-            if (!$woocommerce->version) {
-                exit;
-            } else {
-                $actualversion = $woocommerce->version;
-                $lastversion = $this->getLastGitHubReleaseVersion('woocommerce/woocommerce');
-                $file = plugin_dir_path( __DIR__ ) . "webpay.php";
-                $search = " * Version:";
-                $lines = file($file);
-                foreach ($lines as $line) {
-                    if (strpos($line, $search) !== false) {
-                        $currentplugin = str_replace(" * Version:", "", $line);
-                    }
-                }
-            }
         }
-        $result = array(
+        if (!wc()->version) {
+            exit;
+        }
+        
+        $actualversion = wc()->version;
+        $lastversion = $this->getLastGitHubReleaseVersion('woocommerce/woocommerce');
+        $currentplugin = (new WordpressPluginVersion())->get();
+        return array(
             'current_ecommerce_version' => $actualversion,
             'last_ecommerce_version' => $lastversion,
             'current_plugin_version' => $currentplugin
