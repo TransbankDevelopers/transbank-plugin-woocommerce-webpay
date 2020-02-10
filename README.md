@@ -4,7 +4,22 @@ Plugin oficial de Woocommerce para Webpay
 
 ## Descripción
 
-Este plugin de Woocommerce implementa el [SDK PHP de Webpay](https://github.com/TransbankDevelopers/transbank-sdk-php).
+Este plugin **oficial** ha sido creado para que puedas integrar Webpay fácilmente en tu comercio, basado en Woocommerce.
+Está basado en el SDK oficial de PHP [SDK PHP de Webpay](https://github.com/TransbankDevelopers/transbank-sdk-php).
+
+### ¿Cómo instalar?
+Puedes ver instrucciones de instalación y documentación en [https://www.transbankdevelopers.cl/plugin/woocommerce/](https://www.transbankdevelopers.cl/plugin/woocommerce/)
+
+### Paso a producción
+Al instalar el plugin, este vendrá configurado para funcionar en modo '**integración**'(en el ambiente de pruebas de Transbank). Para poder operar con dinero real (ambiente de **producción**), debes:
+
+1. Tener tu propio código de comercio. Si no lo tienes, solicita Webpay Plus en [transbank.cl](https://transbank.cl)
+2. Debes [generar tus credenciales](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay) (llave privada y llave pública)
+3. Enviar la planilla de validación a soporte@transbank.cl, junto con la llave pública (generada en el paso anterior) y tu logo. 
+4. Cuando Transbank confirme que ha cargado tu certificado público y logo, debes entrar a la pantalla de configuración del plugin dentro de WooCommerce y colocar tu código de comercio, llave privada, llave pública y poner el ambiente de 'Producción'. 
+
+Puedes ver más información acá: [https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay)
+
 
 ## Requisitos 
 * PHP 5.6 o superior
@@ -27,12 +42,12 @@ Para cumplir estas dependencias, debes instalar [Composer](https://getcomposer.o
 
 Para apoyar el levantamiento rápido de un ambiente de desarrollo, hemos creado la especificación de contenedores a través de Docker Compose.
 
-Para usarlo seguir el siguiente [README Woocommerce 3.4.0 con php 5.6](./docker-php5.6)  
+Para usarlo seguir el siguiente [README Woocommerce 3.4.0 con php 7.2](./docker-woocommerce-php7.2)  
 
 ### Actualizar versión del SDK de Transbank
 Para actualizar la versión del SDK de Transbank se debe editar el archivo `woocommerce-transbank/composer.json` y cambiar
 el valor de la propiedad `"transbank/transbank-sdk"` por la versión que se desea instalar y luego ejecutar el bash `update`
-que esta en la carpeta `docker-woocommerce-php5.6` lo que actualizara la dependencia del plugin.
+que esta en la carpeta `docker-woocommerce-php7.2` lo que actualizara la dependencia del plugin.
 
 ### Crear el instalador del plugin
 
