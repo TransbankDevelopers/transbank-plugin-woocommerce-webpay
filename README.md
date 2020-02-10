@@ -12,10 +12,11 @@ Puedes ver instrucciones de instalación y documentación en [https://www.transb
 
 ### Paso a producción
 Al instalar el plugin, este vendrá configurado para funcionar en modo '**integración**'(en el ambiente de pruebas de Transbank). Para poder operar con dinero real (ambiente de **producción**), debes:
-1.- Tener tu propio código de comercio. Si no lo tienes, solicita Webpay Plus en [transbank.cl](https://transbank.cl)
-2.- Debes [generar tus credenciales](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay) (llave privada y llave pública)
-3.- Enviar la planilla de validación a soporte@transbank.cl, junto con la llave pública (generada en el paso anterior) y tu logo. 
-4.- Cuando Transbank confirme que ha cargado tu certificado público y logo, debes entrar a la pantalla de configuración del plugin dentro de WooCommerce y colocar tu código de comercio, llave privada, llave pública y poner el ambiente de 'Producción'. 
+
+1. Tener tu propio código de comercio. Si no lo tienes, solicita Webpay Plus en [transbank.cl](https://transbank.cl)
+2. Debes [generar tus credenciales](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay) (llave privada y llave pública)
+3. Enviar la planilla de validación a soporte@transbank.cl, junto con la llave pública (generada en el paso anterior) y tu logo. 
+4. Cuando Transbank confirme que ha cargado tu certificado público y logo, debes entrar a la pantalla de configuración del plugin dentro de WooCommerce y colocar tu código de comercio, llave privada, llave pública y poner el ambiente de 'Producción'. 
 
 Puedes ver más información acá: [https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay)
 
