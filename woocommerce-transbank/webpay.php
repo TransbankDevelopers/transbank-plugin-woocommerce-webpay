@@ -65,7 +65,7 @@ function woocommerce_transbank_init()
             self::$URL_FINAL = '_URL_';
             
             $this->id = 'transbank';
-            $this->icon = plugin_dir_url(__FILE__ ) . '/images/webpay.png';
+            $this->icon = plugin_dir_url(__FILE__ ) . 'libwebpay/images/webpay.png';
             $this->method_title = __('Transbank Webpay Plus');
             $this->notify_url = add_query_arg('wc-api', 'WC_Gateway_' . $this->id, home_url('/'));
             $this->title = 'Transbank Webpay';
