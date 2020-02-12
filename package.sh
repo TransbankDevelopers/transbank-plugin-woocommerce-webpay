@@ -13,7 +13,6 @@ FILE1="webpay.php"
 
 cd $SRC_DIR
 composer install --no-dev
-composer update --no-dev
 cd ..
 
 sed -i.bkp "s/Version: VERSION_REPLACE_HERE/Version: ${TRAVIS_TAG#"v"}/g" "$SRC_DIR/$FILE1"
@@ -21,7 +20,8 @@ sed -i.bkp "s/Version: VERSION_REPLACE_HERE/Version: ${TRAVIS_TAG#"v"}/g" "$SRC_
 PLUGIN_FILE="woocommerce-transbank.zip"
 
 cd $SRC_DIR
-zip -FSr ../$PLUGIN_FILE . -x composer.json composer.lock "$FILE1.bkp"
+zip -FSr ../$PLUGIN_FILE . -x composer.json composer.lock "$FILE1.bkp" vendor/tecnickcom/tcpdf/fonts/*
+zip -ur ../$PLUGIN_FILE ./vendor/tecnickcom/tcpdf/fonts/helvetica.php
 cd ..
 
 cp "$SRC_DIR/$FILE1.bkp" "$SRC_DIR/$FILE1"
