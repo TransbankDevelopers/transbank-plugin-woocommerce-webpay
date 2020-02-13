@@ -28,7 +28,6 @@ if (!defined('ABSPATH')) {
 
 add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
 
-require_once ABSPATH . "wp-includes/pluggable.php";
 require_once plugin_dir_path(__FILE__) . "vendor/autoload.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/HealthCheck.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/LogHandler.php";
