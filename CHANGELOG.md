@@ -3,18 +3,24 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [2.5.2] - 2020-02-17
+### Fixed
+- Agrega soporte a PHP 7.4
+- Se cambia logo de webpay en página de pago
+- Elimina `require` innecesario que generaba incompatibilidades con otros plugins
+- Disminuye el tamaño del archivo empaquetado de 17.3MB a 3.9MB
+
 ## [2.5.1] - 2020-01-28
-### Added
+### Fixed
 - Mejora la seguridad de la exportación de reporte
 - Mejora detalles gráficos en la pantalla de configuración, como menciona @Kyberal en [PR #69](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/69)
 - Agrega soporte a PHP 7.3
 - Agrega tcpdf como dependencia de composer
 
-
 ## [2.5.0] - 2020-01-07
 ### Added
 - Agrega métricas de uso cuando se pasa a producción en la configuración o al actualizar el plugin.
-
 
 ## [2.4.1] - 2019-11-18
 ### Fixed
