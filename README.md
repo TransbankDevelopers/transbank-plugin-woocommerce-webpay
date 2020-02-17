@@ -9,17 +9,17 @@ Este plugin **oficial** de Transbank te permite integrar Webpay fácilmente en t
 ### ¿Cómo instalar?
 Puedes ver las instrucciones de instalación y su documentación completa en [transbankdevelopers.cl/plugin/woocommerce/](https://www.transbankdevelopers.cl/plugin/woocommerce/)
 
+
 ### Paso a producción
 Al instalar el plugin, este vendrá configurado para funcionar en modo '**integración**'(en el ambiente de pruebas de Transbank). Para poder operar con dinero real (ambiente de **producción**), debes:
 
 1. Tener tu propio código de comercio. Si no lo tienes, solicita Webpay Plus en [transbank.cl](https://transbank.cl)
-2. Instalar este plugin en tu comercio y verificar que todo funciona correctamente
-3. Debes [generar tus credenciales](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay)  (llave privada y llave pública) usando tu código de comercio. 
-4. Enviar [esta planilla de integración](https://transbankdevelopers.cl/files/evidencia-integracion-webpay-plugins.docx) a soporte@transbank.cl, junto con la llave pública (generada en el paso anterior) y tu logo. 
-5. Cuando Transbank confirme que ha cargado tu certificado público y logo, debes entrar a la pantalla de configuración del plugin dentro de WooCommerce y colocar: tu código de comercio; llave privada; llave pública y poner el ambiente de 'Producción'. 
-6. Debes hacer una compra de $10 en el ambiente de producción para confirmar el correcto funcionamiento. 
+2. Luego de finalizar tu integración debes [generar tus credenciales](https://www.transbankdevelopers.cl/documentacion/como_empezar#credenciales-en-webpay)  (llave privada y llave pública) usando tu código de comercio. 
+3. Enviar [esta planilla de integración](https://transbankdevelopers.cl/files/evidencia-integracion-webpay-plugins.docx) a soporte@transbank.cl, junto con la llave pública (generada en el paso anterior) y tu **logo (130x59 pixeles en formato GIF)**. 
+4. Cuando Transbank confirme que ha cargado tu certificado público y logo, debes entrar a la pantalla de configuración del plugin dentro de Prestashop y colocar tu código de comercio, llave privada, llave pública y poner el ambiente de 'Producción'. 
+5. Debes hacer una compra de $10 en el ambiente de producción para confirmar el correcto funcionamiento. 
 
-Puedes ver más información sobre este proceso en [este link](https://www.transbankdevelopers.cl/documentacion/como_empezar#puesta-en-produccion)
+Puedes ver más información sobre este proceso en [este link](https://www.transbankdevelopers.cl/documentacion/como_empezar#puesta-en-produccion).
 
 # Desarrollo
 A continuación, encontrarás información necesaria para el desarrollo de este plugin. 
