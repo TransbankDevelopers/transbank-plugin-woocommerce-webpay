@@ -45,12 +45,12 @@ Para cumplir estas dependencias, debes instalar [Composer](https://getcomposer.o
 
 Para apoyar el levantamiento rápido de un ambiente de desarrollo, hemos creado la especificación de contenedores a través de Docker Compose.
 
-Para usarlo seguir el siguiente [README Woocommerce 3.4.0 con php 7.2](./docker-woocommerce-php7.2)  
+Para usarlo seguir el siguiente [README Woocommerce 3.4.0 con php 7.4](./docker-woocommerce-php7.4)  
 
 ### Actualizar versión del SDK de Transbank
 Para actualizar la versión del SDK de Transbank se debe editar el archivo `woocommerce-transbank/composer.json` y cambiar
 el valor de la propiedad `"transbank/transbank-sdk"` por la versión que se desea instalar y luego ejecutar el bash `update`
-que esta en la carpeta `docker-woocommerce-php7.2` lo que actualizara la dependencia del plugin.
+que esta en la carpeta `docker-woocommerce-php7.4` lo que actualizara la dependencia del plugin.
 
 ### Crear el instalador del plugin
 
