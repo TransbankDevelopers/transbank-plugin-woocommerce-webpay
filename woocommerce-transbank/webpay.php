@@ -410,16 +410,38 @@ function woocommerce_transbank_init()
         $finalResponse = WC()->session->get($order_info->get_order_key());
         WC()->session->set($order_info->get_order_key(), "");
         
-        $paymentTypeCode = $finalResponse->detailOutput->paymentTypeCode;
-        $paymenCodeResult = $transbank_data->config['VENTA_DESC'][$paymentTypeCode];
+        if(isset($finalResponse->detailOutput)){
+            $detailOutput = $finalResponse->detailOutput;
+            $paymentTypeCode = isset($detailOutput->paymentTypeCode) ? $detailOutput->paymentTypeCode : null;
+            $authorizationCode = isset($detailOutput->authorizationCode) ? $detailOutput->authorizationCode : null;
+            $amount = isset($detailOutput->amount) ? $detailOutput->amount : null;
+            $sharesNumber = isset($detailOutput->sharesNumber) ? $detailOutput->sharesNumber : null;
+            $responseCode = isset($detailOutput->responseCode) ? $detailOutput->responseCode : null;
+        } else {
+            $paymentTypeCode = null;
+            $authorizationCode = null;
+            $amount = null;
+            $sharesNumber = null;
+            $responseCode = null;
+        }
         
-        if ($finalResponse->detailOutput->responseCode == 0) {
+        if(isset($transbank_data->config)){
+            $paymenCodeResult = "Sin cuotas";
+            if(array_key_exists('VENTA_DESC', $transbank_data->config)){
+                if(array_key_exists($paymentTypeCode, $transbank_data->config['VENTA_DESC'])){
+                    $paymenCodeResult = $transbank_data->config['VENTA_DESC'][$paymentTypeCode];
+                }
+            }
+        }
+        
+        if ($responseCode == 0) {
             $transactionResponse = "Transacci&oacute;n Aprobada";
         } else {
             $transactionResponse = "Transacci&oacute;n Rechazada";
         }
         
-        $date_accepted = new DateTime($finalResponse->transactionDate);
+        $transactionDate = isset($finalResponse->transactionDate) ? $finalResponse->transactionDate : null;
+        $date_accepted = new DateTime($transactionDate);
         
         if ($finalResponse != null) {
             
@@ -437,11 +459,11 @@ function woocommerce_transbank_init()
             
             update_post_meta($order_id, 'transactionResponse', $transactionResponse);
             update_post_meta($order_id, 'buyOrder', $finalResponse->buyOrder);
-            update_post_meta($order_id, 'authorizationCode', $finalResponse->detailOutput->authorizationCode);
+            update_post_meta($order_id, 'authorizationCode', $authorizationCode);
             update_post_meta($order_id, 'cardNumber', $finalResponse->cardDetail->cardNumber);
             update_post_meta($order_id, 'paymenCodeResult', $paymenCodeResult);
-            update_post_meta($order_id, 'amount', $finalResponse->detailOutput->amount);
-            update_post_meta($order_id, 'coutas', $finalResponse->detailOutput->sharesNumber);
+            update_post_meta($order_id, 'amount', $amount);
+            update_post_meta($order_id, 'coutas', $sharesNumber);
             update_post_meta($order_id, 'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
             
             echo '</br><h2>Detalles del pago</h2>' . '<table class="shop_table order_details">' . '<tfoot>' . '<tr>' . '<th scope="row">Respuesta de la Transacci&oacute;n:</th>' . '<td><span class="RT">' . $transactionResponse . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">C&oacute;digo de la Transacci&oacute;n:</th>' . '<td><span class="CT">' . $finalResponse->detailOutput->responseCode . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Orden de Compra:</th>' . '<td><span class="RT">' . $finalResponse->buyOrder . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Codigo de Autorizaci&oacute;n:</th>' . '<td><span class="CA">' . $finalResponse->detailOutput->authorizationCode . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Fecha Transacci&oacute;n:</th>' . '<td><span class="FC">' . $date_accepted->format('d-m-Y') . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row"> Hora Transacci&oacute;n:</th>' . '<td><span class="FT">' . $date_accepted->format('H:i:s') . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tarjeta de Cr&eacute;dito:</th>' . '<td><span class="TC">************' . $finalResponse->cardDetail->cardNumber . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tipo de Pago:</th>' . '<td><span class="TP">' . $paymentType . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tipo de Cuota:</th>' . '<td><span class="TC">' . $installmentType . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Monto Compra:</th>' . '<td><span class="amount">' . $finalResponse->detailOutput->amount . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">N&uacute;mero de Cuotas:</th>' . '<td><span class="NC">' . $finalResponse->detailOutput->sharesNumber . '</span></td>' . '</tr>' . '</tfoot>' . '</table><br/>';
