@@ -227,7 +227,7 @@ function woocommerce_transbank_init()
                         'wc-refunded' => 'Reembolsado',
                         'wc-failed' => 'Fallido'
                     ],
-                    'default' => 'wc-pending'
+                    'default' => 'wc-processing'
                 ]
             ];
         }
