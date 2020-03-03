@@ -34,6 +34,7 @@ require_once plugin_dir_path(__FILE__) . "libwebpay/LogHandler.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/ConnectionCheck.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/ReportGenerator.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/Telemetry/PluginVersion.php";
+require_once plugin_dir_path(__FILE__) . "libwebpay/ProductionMode/GenerateSSL.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/WordpressPluginVersion.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
 
@@ -359,7 +360,7 @@ function woocommerce_transbank_init()
          **/
         public function admin_options()
         {
-            
+            $this->generateSSL = new GenerateSSL();
             $this->healthcheck = new HealthCheck($this->config);
             include 'libwebpay/admin-options.php';
         }

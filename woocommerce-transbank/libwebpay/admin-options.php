@@ -1,22 +1,63 @@
-<?php $datos_hc = json_decode($this->healthcheck->printFullResume()); ?>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<?php
+$datos_hc = json_decode($this->healthcheck->printFullResume());
+$datos_ssl = json_decode($this->generateSSL->getFullResume()); 
+$dir = substr( plugin_dir_url( __FILE__ ) , 0, -10);
+?>
+<?php  ?>
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<link href="<?php echo plugin_dir_path( __FILE__ ) ?>css/bootstrap-switch.css" rel="stylesheet">
-<link href="<?php echo plugin_dir_url( __FILE__ ) ?>css/tbk.css" rel="stylesheet">
+<link href="<?php echo $dir ?>css/bootstrap-switch.css" type="text/css" rel="stylesheet">
+<link href="<?php echo $dir ?>css/tbk.css" type="text/css" rel="stylesheet">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://unpkg.com/bootstrap-switch"></script>
 
+<script type="text/javascript" src="<?php echo $dir ?>js/generate_ssl.js"></script>
+
 <h3><?php _e('Transbank Webpay', 'woocommerce'); ?></h3>
 <p><?php _e('Transbank es la empresa l&iacute;der en negocios de medio de pago seguros en Chile.'); ?></p>
 
 <a class ="button " data-toggle="modal" href="#tb_modal">Informacion del sistema</a>
+<a class ="button " data-toggle="modal" href="#tb_ssl">Generar certificados (SSL)</a>
 <hr>
 
 <table class="form-table">
     <?php $this->generate_settings_html(); ?>
 </table>
+
+<div class="modal" id="tb_ssl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                Generar certificados OpenSSL y enviar a transbank.
+            </div>
+            <div class="modal-body">
+                <div class="tab-content">
+                    <h3 class="tbk_title_h3">Certificados generados</h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="Firma de certificado" class="label label-info">?</div>
+                                <strong>Firma de certificado: </strong>
+                            </td>
+                            <td class="tbk_table_td" id='download'>
+                                <a class="button-primary" id="tbk_ssl_download">
+                                    Descargar y asignar este certificado
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <input type=hidden id=csrout value="<?php echo $datos_ssl->csrout; ?>">
+                    <input type=hidden id=certout value="<?php echo $datos_ssl->certout; ?>">
+                    <input type=hidden id=pkeyout value="<?php echo $datos_ssl->pkeyout; ?>">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="tb_modal">
     <div class="modal-dialog">
