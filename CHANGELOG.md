@@ -4,6 +4,13 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.5.3] - 2020-03-03
+### Fixed
+- Actualiza documentación del Readme [PR #88](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/88), [PR #89](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/89), [PR #91](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/91) 
+- Se actualiza token encriptado de Github para Travis [PR #90](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/90) 
+- Se modifica estado por defecto al finalizar una orden para que ahora sea 'wc-processing' y no 'wc-pending' en [PR #96](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/96) de [@TCattd](https://github.com/TCattd)
+- Se resuelve [Issue #92](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/92) enviado por [@svaldesm](https://github.com/svaldesm) en [PR #95](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/95)
+
 ## [2.5.2] - 2020-02-17
 ### Fixed
 - Agrega soporte a PHP 7.4

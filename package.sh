@@ -5,7 +5,7 @@ echo "Travis tag: $TRAVIS_TAG"
 
 if [ "$TRAVIS_TAG" = "" ]
 then
-   TRAVIS_TAG='2.5.2'
+   TRAVIS_TAG='2.5.3'
 fi
 
 SRC_DIR="woocommerce-transbank"
