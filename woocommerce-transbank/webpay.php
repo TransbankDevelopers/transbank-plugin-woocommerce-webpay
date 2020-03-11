@@ -40,6 +40,7 @@ require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
 
 register_activation_hook(__FILE__, 'on_activation');
 add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
+add_action('wp_ajax_generate_ssl', 'GenerateSSL::getSSL');
 add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
 
 function woocommerce_transbank_init()
@@ -123,6 +124,8 @@ function woocommerce_transbank_init()
         {
             wp_enqueue_script('ajax-script', plugins_url('/js/admin.js', __FILE__), ['jquery']);
             wp_localize_script('ajax-script', 'ajax_object', ['ajax_url' => admin_url('admin-ajax.php')]);
+            wp_enqueue_script('ssl-script', plugins_url('/js/generate_ssl.js', __FILE__), ['jquery']);
+            wp_localize_script('ssl-script', 'ssl_object', ['ajax_url' => admin_url('admin-ajax.php')]);
         }
         
         public function checkConnection()
@@ -360,7 +363,6 @@ function woocommerce_transbank_init()
          **/
         public function admin_options()
         {
-            $this->generateSSL = new GenerateSSL();
             $this->healthcheck = new HealthCheck($this->config);
             include 'libwebpay/admin-options.php';
         }
