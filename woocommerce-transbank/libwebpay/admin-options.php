@@ -1,6 +1,7 @@
 <?php
 $datos_hc = json_decode($this->healthcheck->printFullResume());
-$datos_ssl = json_decode($this->generateSSL->getFullResume()); 
+$certificates = include 'certificates.php';
+$integration_commerce_code = $certificates['commerce_code'];
 $dir = substr( plugin_dir_url( __FILE__ ) , 0, -10);
 ?>
 <?php  ?>
@@ -19,45 +20,276 @@ $dir = substr( plugin_dir_url( __FILE__ ) , 0, -10);
 <p><?php _e('Transbank es la empresa l&iacute;der en negocios de medio de pago seguros en Chile.'); ?></p>
 
 <a class ="button " data-toggle="modal" href="#tb_modal">Informacion del sistema</a>
-<a class ="button " data-toggle="modal" href="#tb_ssl">Generar certificados (SSL)</a>
+<a class ="button " data-toggle="modal" href="#tb_productivo">Pasar a producción</a>
 <hr>
 
 <table class="form-table">
     <?php $this->generate_settings_html(); ?>
 </table>
 
-<div class="modal" id="tb_ssl">
+<div class="modal" id="tb_productivo">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                Generar certificados OpenSSL y enviar a transbank.
+                Generar certificados OpenSSL.
             </div>
             <div class="modal-body">
                 <div class="tab-content">
-                    <h3 class="tbk_title_h3">Certificados generados</h3>
                     <table class="tbk_table_info">
                         <tr>
                             <td>
-                                <div title="Firma de certificado" class="label label-info">?</div>
-                                <strong>Firma de certificado: </strong>
+                                <div title="Código de comercio" class="label label-info">?</div>
+                                <strong>Código de comercio: </strong>
                             </td>
-                            <td class="tbk_table_td" id='download'>
-                                <a class="button-primary" id="tbk_ssl_download">
-                                    Descargar y asignar este certificado
-                                </a>
+                            <td class="tbk_table_td">
+                                <input id="commerce_code_input" name="commerce_code_input" type="text" value="">
                             </td>
                         </tr>
                     </table>
-                    <br>
-                    <input type=hidden id=csrout value="<?php echo $datos_ssl->csrout; ?>">
-                    <input type=hidden id=certout value="<?php echo $datos_ssl->certout; ?>">
-                    <input type=hidden id=pkeyout value="<?php echo $datos_ssl->pkeyout; ?>">
+                    <a id="gen_ssl" class ="button ">Generar certificados</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal" id="tb_ssl" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="tbk_title_h4">
+                    <strong>Evidencia de integración Webpay Plus Webservice</strong>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content">
+                    <h3 class="tbk_title_h3">
+                        <strong>Información General</strong>
+                    </h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="Código de comercio Integración" class="label label-success"></div>
+                                <strong>Código Integración: </strong>
+                            </td>
+                            <td class="tbk_table_td" id='integration_commerce_code'>
+                                <?php echo $integration_commerce_code; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Código comercio productivo" class="label label-success"></div>
+                                <strong>Código comercio productivo: </strong>
+                            </td>
+                            <td class="tbk_table_td" id='commerce_code'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Rut de comercio" class="label label-info">?</div>
+                                <strong>Rut del comercio: </strong>
+                            </td>
+                            <td class="tbk_table_td" data-tip="79999999-9">
+                                <input id="rut" name="rut" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Moneda que integra" class="label label-info">?</div>
+                                <strong>Moneda que integra: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input type="radio" id="peso_chileno" name="moneda" value="peso_chileno">
+                                <label for="peso_chileno">Peso Chileno</label>
+                                <input type="radio" id="dolar" name="moneda" value="dolar">
+                                <label for="dolar">Dolar</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Sistema Operativo Servidor" class="label label-success"></div>
+                                <strong>Sistema Operativo Servidor: </strong>
+                            </td>
+                            <td class="tbk_table_td" id='os'>
+                                <?php echo $this->healthcheck->phpinfo2array()['phpinfo']['System']; ?>
+                                <?php echo $_SERVER['SERVER_SOFTWARE']; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Ubicación Geográfica Servidor" class="label label-info">?</div>
+                                <strong>Ubicación Geográfica Servidor: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="ubicacion_servidor" name="ubicacion_servidor" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="URL Test" class="label label-info">?</div>
+                                <strong>URL Test: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="url_test" name="url_test" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="URL Producción" class="label label-info">?</div>
+                                <strong>URL Producción: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="url_produccion" name="url_produccion" type="text" value="">
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h3 class="tbk_title_h3">
+                        <strong>Contacto Comercial / Administrativo</strong>
+                    </h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="Nombre contacto" class="label label-info">?</div>
+                                <strong>Nombre contacto: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="nombre_administrativo" name="nombre_administrativo" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="E-Mail" class="label label-info">?</div>
+                                <strong>E-Mail: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="email_administrativo" name="email_administrativo" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Teléfono" class="label label-info">?</div>
+                                <strong>Teléfono: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="telefono_administrativo" name="telefono_administrativo" type="text" value="">
+                            </td>
+                        </tr>
+                    </table>
+                    </br>
+                    <h3 class="tbk_title_h3">
+                        <strong>Contacto técnico</strong>
+                    </h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="Nombre contacto técnico" class="label label-info">?</div>
+                                <strong>Nombre contacto técnico: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="nombre_tecnico" name="nombre_tecnico" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="E-Mail" class="label label-info">?</div>
+                                <strong>E-Mail: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="email_tecnico" name="email_tecnico" type="text" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="Teléfono" class="label label-info">?</div>
+                                <strong>Teléfono: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                <input id="telefono_tecnico" name="telefono_tecnico" type="text" value="">
+                            </td>
+                        </tr>
+                    </table>
+                    </br>
+                    <h3 class="tbk_title_h3">
+                        <strong>Antecedentes de Integración</strong>
+                    </h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="Tipo de desarrollo" class="label label-info">?</div>
+                                <strong>Tipo de desarrollo: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                Plugin Transbank
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="E-Commerce" class="label label-info">?</div>
+                                <strong>E-Commerce: </strong>
+                            </td>
+                            <td class="tbk_table_td">
+                                WooCommerce
+                            </td>
+                        </tr>
+                    </table>
+                    </br>
+                    <h3 class="tbk_title_h3">
+                        <strong>Declaración</strong>
+                    </h3>
+                    <table class="tbk_table_info">
+                        <tr>
+                            <td>
+                                <div title="declaro1" class="label label-info">?</div>
+                                <input type="checkbox" id="declaro1" name="declaro1" value="declaro1">
+                            </td>
+                            <td>
+                                <label for="declaro1"> Declaro(amos) que la integración en curso valida la firma de Webpay en las respuestas a cada método utilizado y cumple las instrucciones de los manuales de Webpay entregados por Transbank.</label><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div title="declaro2" class="label label-info">?</div>
+                                <input type="checkbox" id="declaro2" name="declaro2" value="declaro1">
+                            </td>
+                            <td>
+                                <label for="declaro2"> Declaro(amos) que la información presentada es fidedigna.</label><br>
+                            </td>
+                        </tr>
+                        <br>
+                        <br>
+                        <tr>
+                            <td>
+                                <div title="Certificado autofirmado" class="label label-info">?</div>
+                                Certificado autofirmado
+                            </td>
+                            <td id="csrout">
+                            </td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td>
+                                <div title="Firma de certificado" class="label label-info">?</div>
+                                <strong>Certificado generado: </strong>
+                            </td>
+                            <td class="tbk_table_td" id='download'>
+                                <a class="button-primary" id="tbk_ssl_download">
+                                    Copiar y asignar el certificado
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <input type=hidden id=certout value="">
+                    <input type=hidden id=pkeyout value="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="target" tabindex="-1" contentEditable="true"></div>
 
 <div class="modal" id="tb_modal">
     <div class="modal-dialog">
