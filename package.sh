@@ -8,7 +8,7 @@ then
    TRAVIS_TAG='2.6.0'
 fi
 
-SRC_DIR="woocommerce-transbank"
+SRC_DIR="transbank-webpay-plus"
 FILE1="webpay.php"
 
 cd $SRC_DIR
@@ -17,7 +17,7 @@ cd ..
 
 sed -i.bkp "s/Version: VERSION_REPLACE_HERE/Version: ${TRAVIS_TAG#"v"}/g" "$SRC_DIR/$FILE1"
 
-PLUGIN_FILE="woocommerce-transbank.zip"
+PLUGIN_FILE="transbank-webpay-plus.zip"
 
 cd $SRC_DIR
 zip -FSr ../$PLUGIN_FILE . -x composer.json composer.lock "$FILE1.bkp" vendor/tecnickcom/tcpdf/fonts/*

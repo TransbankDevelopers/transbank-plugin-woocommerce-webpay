@@ -26,27 +26,65 @@ if (!defined('ABSPATH')) {
  * WC tested up to: 4.0.0
  */
 
-add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
+function transbank_webpay_plus_activate()
+{
+    activate_plugins(__FILE__);
+    registerPluginVersion();
+}
 
-require_once plugin_dir_path(__FILE__) . "vendor/autoload.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/HealthCheck.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/LogHandler.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/ConnectionCheck.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/ReportGenerator.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/Telemetry/PluginVersion.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/WordpressPluginVersion.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
+function rmdir_recursive($dir) {
+    $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
+    $it = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+    foreach($it as $file) {
+        if ($file->isDir()) rmdir($file->getPathname());
+        else unlink($file->getPathname());
+    }
+    rmdir($dir);
+}
 
-register_activation_hook(__FILE__, 'on_activation');
-add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
-add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
+function transbank_deactivate_old_versions()
+{
+    $dir = dirname( __FILE__, 2 ) . '/woocommerce-transbank*/webpay.php';
+    $files = glob($dir, GLOB_BRACE);
 
-function woocommerce_transbank_init()
+    foreach ($files as &$file) {
+        $plugin = plugin_basename($file);
+        $exist = is_plugin_active($plugin);
+        if ($exist) {
+            deactivate_plugins($plugin);
+        }
+    }
+    // remove dir that no should be exists
+    $dir = dirname( __FILE__, 2 ) . '/woocommerce-transbank*';
+    $files = glob($dir, GLOB_BRACE);
+    foreach ($files as &$file){
+        rmdir_recursive($file);
+    }
+}
+
+add_action('update_option_active_plugins', 'transbank_deactivate_old_versions', 0);
+add_action('plugins_loaded', 'transbank_webpay_plus_init', 0);
+
+
+function transbank_webpay_plus_init()
 {
     
     if (!class_exists("WC_Payment_Gateway")) {
         return;
     }
+    register_activation_hook(__FILE__, 'transbank_webpay_plus_activate');
+
+    require_once plugin_dir_path(__FILE__) . "vendor/autoload.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/HealthCheck.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/LogHandler.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/ConnectionCheck.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/ReportGenerator.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/Telemetry/PluginVersion.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/WordpressPluginVersion.php";
+    require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
+
+    add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
+    add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
     
     class WC_Gateway_Transbank extends WC_Payment_Gateway
     {
@@ -359,7 +397,6 @@ function woocommerce_transbank_init()
          **/
         public function admin_options()
         {
-            
             $this->healthcheck = new HealthCheck($this->config);
             include 'libwebpay/admin-options.php';
         }
@@ -483,11 +520,4 @@ function woocommerce_transbank_init()
         
         return array_merge($links, $newLinks);
     }
-}
-
-function on_activation()
-{
-    woocommerce_transbank_init();
-    $pluginObject = new WC_Gateway_Transbank();
-    $pluginObject->registerPluginVersion();
 }
