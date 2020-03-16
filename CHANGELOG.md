@@ -4,6 +4,11 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2020-03-16
+### Changed
+- README estandarizado, con links a repositorios con ejemplos utilizando distintas versiones de woocommerce + PHP.
+- Se añade soporte comprobado al plugin hasta woocommerce 4.0.0.
+
 ## [2.5.3] - 2020-03-03
 ### Fixed
 - Actualiza documentación del Readme [PR #88](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/88), [PR #89](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/89), [PR #91](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/91) 
