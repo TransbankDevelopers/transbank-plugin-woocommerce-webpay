@@ -26,12 +26,6 @@ if (!defined('ABSPATH')) {
  * WC tested up to: 4.0.0
  */
 
-function transbank_webpay_plus_activate()
-{
-    activate_plugins(__FILE__);
-    registerPluginVersion();
-}
-
 function rmdir_recursive($dir) {
     $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
     $it = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
@@ -62,9 +56,50 @@ function transbank_deactivate_old_versions()
     }
 }
 
+/**
+ * Check if the GET parameters "activate" and "activate-multi" are set
+ */
+function twp_is_activated()
+{
+    $return         = FALSE;
+    $activate       = filter_input( INPUT_GET, 'activate',       FILTER_SANITIZE_STRING );
+    $activate_multi = filter_input( INPUT_GET, 'activate-multi', FILTER_SANITIZE_STRING );
+
+    if( ! empty( $activate ) || ! empty( $activate_multi ) )
+        $return = TRUE;
+
+    return $return;
+}
+
+function register_message( $translated_text, $untranslated_text, $domain ) {
+    $old = array(
+        "Plugin <strong>activated</strong>.",
+        "Plugin activated.",
+        "Selected plugins <strong>activated</strong>." 
+    );
+
+    $new = "El plugin elimino las versiones anteriores para evitar problemas de compatibilidad.\n".
+        " Plugin <strong>activated</strong>.";
+
+    if ( in_array( $untranslated_text, $old, true ) )
+    {
+        $translated_text = $new;
+        remove_filter( current_filter(), __FUNCTION__, 99 );
+    }
+    return $translated_text;
+}
+
+
 add_action('update_option_active_plugins', 'transbank_deactivate_old_versions', 0);
 add_action('plugins_loaded', 'transbank_webpay_plus_init', 0);
+twp_is_activated() && add_filter( 'gettext', 'register_message', 99, 3 );
 
+
+function transbank_webpay_plus_activate()
+{
+    activate_plugins(__FILE__);
+    registerPluginVersion();
+}
 
 function transbank_webpay_plus_init()
 {
