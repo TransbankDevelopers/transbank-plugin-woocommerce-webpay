@@ -6,8 +6,8 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 
 ## [2.6.0] - 2020-03-16
 ### Changed
-- README estandarizado, con links a repositorios con ejemplos utilizando distintas versiones de woocommerce + PHP.
-- Se añade soporte comprobado al plugin hasta woocommerce 4.0.0.
+- README estandarizado, con links a repositorios con ejemplos utilizando distintas versiones de woocommerce + PHP, en [PR #98](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/98).
+- Se añade soporte comprobado al plugin hasta woocommerce 4.0.0 en [PR #100](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/100).
 
 ## [2.5.3] - 2020-03-03
 ### Fixed
