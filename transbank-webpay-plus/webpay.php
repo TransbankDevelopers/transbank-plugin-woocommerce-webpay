@@ -54,7 +54,7 @@ function transbank_deactivate_old_versions()
             deactivate_plugins($plugin);
         }
     }
-    // remove dir that no should be exists
+    // remove dir that should not exist
     $dir = dirname( __FILE__, 2 ) . '/woocommerce-transbank*';
     $files = glob($dir, GLOB_BRACE);
     foreach ($files as &$file){
