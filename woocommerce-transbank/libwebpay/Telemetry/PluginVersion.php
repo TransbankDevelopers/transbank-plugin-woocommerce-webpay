@@ -4,7 +4,7 @@ namespace Transbank\Telemetry;
 class PluginVersion
 {
     protected $soapUri = 'http://www.cumbregroup.com/tbk-webservice/PluginVersion.php?wsdl';
-    protected $client;
+    protected $client = null;
     
     const ENV_INTEGRATION = 'INTEGRACION';
     const ENV_PRODUCTION = 'PRODUCCION';
@@ -21,15 +21,24 @@ class PluginVersion
      */
     public function __construct()
     {
-        $this->client = new \SoapClient($this->soapUri);
+        try {
+            $this->client = new \SoapClient($this->soapUri);
+        } catch (\Exception $exception) {
+        
+        }
     }
     
     public function registerVersion($commerceCode, $pluginVersion, $ecommerceVersion, $ecommerceId, $environment = self::ENV_PRODUCTION, $product = self::PRODUCT_WEBPAY)
     {
+        if ($this->client === null) {
+            return null;
+        }
+        
         try {
             return $this->client->version_register($commerceCode, $pluginVersion, $ecommerceVersion, $ecommerceId, $environment, $product);
         } catch (\Exception $e) {
             // Si la conexión falla, simplemente no hacer nada.
         }
+        return null;
     }
 }
