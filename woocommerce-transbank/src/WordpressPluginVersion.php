@@ -1,5 +1,6 @@
 <?php
-namespace Transbank\Woocommerce;
+
+namespace Transbank\Woocommerce\Webpay;
 
 class WordpressPluginVersion
 {

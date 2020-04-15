@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Telemetry;
+namespace Transbank\WooCommerce\Webpay\Telemetry;
 
 class PluginVersion
 {

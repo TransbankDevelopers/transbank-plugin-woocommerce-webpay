@@ -1,7 +1,9 @@
 <?php
 
-use Transbank\Telemetry\PluginVersion;
-use Transbank\Woocommerce\WordpressPluginVersion;
+use Transbank\WooCommerce\Webpay\Exceptions\TokenNotFoundOnDatabaseException;
+use Transbank\WooCommerce\Webpay\Telemetry\PluginVersion;
+use Transbank\WooCommerce\Webpay\TransbankWebpayPlugin;
+use Transbank\WooCommerce\Webpay\WordpressPluginVersion;
 
 if (!defined('ABSPATH')) {
     exit();
@@ -23,7 +25,7 @@ if (!defined('ABSPATH')) {
  * Author: Transbank
  * Author URI: https://www.transbank.cl
  * WC requires at least: 3.4.0
- * WC tested up to: 4.0.0
+ * WC tested up to: 4.0.1
  */
 
 add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
@@ -33,24 +35,20 @@ require_once plugin_dir_path(__FILE__) . "libwebpay/HealthCheck.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/LogHandler.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/ConnectionCheck.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/ReportGenerator.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/Telemetry/PluginVersion.php";
-require_once plugin_dir_path(__FILE__) . "libwebpay/WordpressPluginVersion.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
 
-register_activation_hook(__FILE__, 'on_activation');
+register_activation_hook(__FILE__, 'on_webpay_plugin_activation');
 add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
 add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
 
 function woocommerce_transbank_init()
 {
-    
     if (!class_exists("WC_Payment_Gateway")) {
         return;
     }
     
     class WC_Gateway_Transbank extends WC_Payment_Gateway
     {
-        
         private static $URL_RETURN;
         private static $URL_FINAL;
         
@@ -196,7 +194,7 @@ function woocommerce_transbank_init()
                         'INTEGRACION' => 'Integraci&oacute;n',
                         'PRODUCCION' => 'Producci&oacute;n'
                     ],
-                    'default' => __('INTEGRACION', 'woocommerce')
+                    'default' => 'INTEGRACION'
                 ],
                 'webpay_commerce_code' => [
                     'title' => __('C&oacute;digo de Comercio', 'woocommerce'),
@@ -237,7 +235,6 @@ function woocommerce_transbank_init()
          **/
         function receipt_page($order_id)
         {
-            
             $order = new WC_Order($order_id);
             $amount = (int)number_format($order->get_total(), 0, ',', '');
             $sessionId = uniqid();
@@ -256,7 +253,7 @@ function woocommerce_transbank_init()
                 $token_ws = $result["token_ws"];
 
                 global $wpdb;
-                $wpdb->insert("{$wpdb->base_prefix}transaction", [
+                $wpdb->insert(TransbankWebpayPlugin::getWebpayTransactionsTableName(), [
                     'buyOrder' => $buyOrder,
                     'amount' => $amount,
                     'token' => $token_ws,
@@ -268,7 +265,7 @@ function woocommerce_transbank_init()
                 
             } else {
                 wc_add_notice(__('ERROR: ',
-                        'woothemes') . 'Ocurri&oacute; un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
+                        'woocommerce') . 'Ocurri&oacute; un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
                     'error');
             }
         }
@@ -290,66 +287,26 @@ function woocommerce_transbank_init()
         /**
          * Valida respuesta IPN (Instant Payment Notification)
          **/
-        public function check_ipn_request_is_valid($data)
+        public function check_ipn_request_is_valid($postData)
         {
+            $token_ws = $this->getTokenWs($postData);
+    
+            $webpayTransaction = $this->getWebpayTransactionByToken($token_ws);
+            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
+            $result = $transbankSdkWebpay->commitTransaction($token_ws);
             
-            $token_ws = isset($data["token_ws"]) ? $data["token_ws"] : null;
-
-            if (isset($token_ws)){
-                global $wpdb;
-                $transaction = $wpdb->prefix . "transaction";
-                $sql = "SELECT * FROM $transaction WHERE token = '{$token_ws}';";
-                $resultsql = $wpdb->get_results($sql)[0] or die(mysql_error());
-
-                $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
-                $result = $transbankSdkWebpay->commitTransaction($token_ws);
-
-                if (is_object($resultsql)){
-                    $order_id = $resultsql->buyorder;
-                    $order_info = new WC_Order($order_id);
-
-                    if (is_object($result)) {
-
-                        WC()->session->set($order_info->get_order_key(), $result);
+            $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->buyorder);
     
-                        if ($result->detailOutput->responseCode == 0) {
-    
-                            if ($result->detailOutput->buyOrder == $resultsql->buyorder && 
-                                $result->sessionId == $resultsql->sessionid && 
-                                $result->detailOutput->amount == $resultsql->amount){
+            WC()->session->set($wooCommerceOrder->get_order_key(), $result);
 
-                                WC()->session->set($order_info->get_order_key() . "_transaction_paid", 1);
-
-                                $order_info->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
-                                $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
-                                $order_info->payment_complete();
-                                $final_status = $this->config['STATUS_AFTER_PAYMENT'];
-                                $order_info->update_status($final_status);
-                                wc_reduce_stock_levels($order_id);
-                                self::redirect($result->urlRedirection, ["token_ws" => $token_ws]);
-                                die();
-                            }
-                        }
-                        $msg = 'Pago rechazado';
-                    } else {
-                        $msg = 'Ha ocurrido un error al procesar la compra con Webpay Plus';
-                    }
-                    $order_info->add_order_note(__($msg, 'woocommerce'));
-                    $order_info->add_order_note(__(json_encode($result), 'woocommerce'));
-                    $order_info->update_status('failed');
-                    $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
-                    wc_add_notice(__('ERROR: ', 'woothemes') . $error_message, 'error');
-                    self::redirect($order_info->get_checkout_payment_url(), ["token_ws" => $token_ws]);
-                    die();
-                } else {
-                    $msg = 'No se encontro la orden';
-                }
-            } else {
-                $msg = 'No se encontro el token';
+            if ($this->transactionIsApproved($result) && $this->validateTransactionDetails($result, $webpayTransaction)) {
+                WC()->session->set($wooCommerceOrder->get_order_key() . "_transaction_paid", 1);
+                $this->completeWooCommerceOrder($wooCommerceOrder, $result, $order_id);
+                return self::redirect($result->urlRedirection, ["token_ws" => $token_ws]);
             }
-            $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada " . $msg;
-            wc_add_notice(__('ERROR: ', 'woothemes') . $error_message, 'error');
-            die();
+    
+            $this->setWooCommerceOrderAsFailed($wooCommerceOrder, $result);
+            return self::redirect($wooCommerceOrder->get_checkout_payment_url(), ["token_ws" => $token_ws]);
         }
         
         /**
@@ -361,7 +318,7 @@ function woocommerce_transbank_init()
             foreach ($data as $name => $value) {
                 echo "<input type='hidden' name='" . htmlentities($name) . "' value='" . htmlentities($value) . "'>";
             }
-            echo "</form>" . "<script language='JavaScript'>" . "document.webpayForm.submit();" . "</script>";
+            echo "</form>" . "<script>" . "document.webpayForm.submit();" . "</script>";
         }
         
         /**
@@ -394,6 +351,97 @@ function woocommerce_transbank_init()
         {
             return (new WordpressPluginVersion())->get();
         }
+        protected function throwError($msg)
+        {
+            $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada " . $msg;
+            wc_add_notice(__('ERROR: ', 'woocommerce') . $error_message, 'error');
+            die();
+        }
+        /**
+         * @param $token_ws
+         * @return mixed
+         */
+        private function getWebpayTransactionByToken($token_ws)
+        {
+            global $wpdb;
+            $transaction = TransbankWebpayPlugin::getWebpayTransactionsTableName();
+            $sql = "SELECT * FROM $transaction WHERE token = '{$token_ws}'";
+            $sqlResult = $wpdb->get_results($sql);
+            if (!is_array($sqlResult) || count($sqlResult) <= 0) {
+                throw new TokenNotFoundOnDatabaseException("Token '{$token_ws}' no se encontró en la base de datos de transacciones, por lo que no se puede completar el proceso");
+            }
+            $webpayTransaction = $sqlResult[0];
+        
+            return $webpayTransaction;
+        }
+        /**
+         * @param array $result
+         * @return bool
+         */
+        private function transactionIsApproved(array $result)
+        {
+            return $result->detailOutput->responseCode == 0;
+        }
+        /**
+         * @param array $result
+         * @param $webpayTransaction
+         * @return bool
+         */
+        private function validateTransactionDetails(array $result, $webpayTransaction)
+        {
+            return $result->detailOutput->buyOrder == $webpayTransaction->buyorder && $result->sessionId == $webpayTransaction->sessionid && $result->detailOutput->amount == $webpayTransaction->amount;
+        }
+        /**
+         * @param WC_Order $wooCommerceOrder
+         * @param array $result
+         * @param $order_id
+         */
+        private function completeWooCommerceOrder(WC_Order $wooCommerceOrder, array $result, $order_id)
+        {
+            $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
+            $wooCommerceOrder->add_order_note(__(json_encode($result), 'woocommerce'));
+            $wooCommerceOrder->payment_complete();
+            $final_status = $this->config['STATUS_AFTER_PAYMENT'];
+            $wooCommerceOrder->update_status($final_status);
+            wc_reduce_stock_levels($order_id);
+        }
+        /**
+         * @param WC_Order $wooCommerceOrder
+         * @param array $result
+         */
+        private function setWooCommerceOrderAsFailed(WC_Order $wooCommerceOrder, array $result)
+        {
+            $msg = 'Pago rechazado';
+            $wooCommerceOrder->add_order_note(__($msg, 'woocommerce'));
+            $wooCommerceOrder->add_order_note(__(json_encode($result), 'woocommerce'));
+            $wooCommerceOrder->update_status('failed');
+            $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada";
+            wc_add_notice(__('ERROR: ', 'woocommerce') . $error_message, 'error');
+        }
+        /**
+         * @param $data
+         * @return |null
+         */
+        private function getTokenWs($data)
+        {
+            $token_ws = isset($data["token_ws"]) ? $data["token_ws"] : null;
+        
+            if (!isset($token_ws)) {
+                $this->throwError('No se encontro el token');
+            }
+        
+            return $token_ws;
+        }
+        /**
+         * @param $orderId
+         * @return WC_Order
+         */
+        private function getWooCommerceOrderById($orderId)
+        {
+            $wooCommerceOrder = new WC_Order($orderId);
+        
+            return $wooCommerceOrder;
+        }
     }
     
     /**
@@ -409,25 +457,23 @@ function woocommerce_transbank_init()
     /**
      * Muestra detalle de pago a Cliente a finalizar compra
      **/
-    function pay_content($order_id)
+    function pay_content($orderId)
     {
-        $order_info = new WC_Order($order_id);
+        $order_info = new WC_Order($orderId);
         $transbank_data = new WC_Gateway_transbank();
-        
-        if ($order_info->get_payment_method_title() == $transbank_data->title) {
-            if (WC()->session->get($order_info->get_order_key() . "_transaction_paid") == "" && WC()->session->get($order_info->get_order_key()) == "" && $order_info->has_status('pending')) {
-                
-                $order_info->add_order_note(__('Pago cancelado con Webpay Plus', 'woocommerce'));
-                $order_info->update_status('failed');
-                
-                wc_add_notice(__('Compra <strong>Anulada</strong>',
-                        'woocommerce') . ' por usuario. Recuerda que puedes pagar o cancelar tu compra cuando lo desees desde <a href="' . wc_get_page_permalink('myaccount') . '">' . __('Tu Cuenta',
-                        'woocommerce') . '</a>', 'error');
-                wp_redirect($order_info->get_checkout_payment_url());
-                die();
-            }
-        } else {
+        if ($order_info->get_payment_method_title() != $transbank_data->title) {
             return;
+        }
+    
+        if (WC()->session->get($order_info->get_order_key() . "_transaction_paid") == "" && WC()->session->get($order_info->get_order_key()) == "" && $order_info->has_status('pending')) {
+            $order_info->add_order_note(__('Pago cancelado con Webpay Plus', 'woocommerce'));
+            $order_info->update_status('failed');
+            
+            wc_add_notice(__('Compra <strong>Anulada</strong>',
+                    'woocommerce') . ' por usuario. Recuerda que puedes pagar o cancelar tu compra cuando lo desees desde <a href="' . wc_get_page_permalink('myaccount') . '">' . __('Tu Cuenta',
+                    'woocommerce') . '</a>', 'error');
+            wp_redirect($order_info->get_checkout_payment_url());
+            die();
         }
         
         $finalResponse = WC()->session->get($order_info->get_order_key());
@@ -480,14 +526,14 @@ function woocommerce_transbank_init()
                 $paymentType = "Crédito";
             }
             
-            update_post_meta($order_id, 'transactionResponse', $transactionResponse);
-            update_post_meta($order_id, 'buyOrder', $finalResponse->buyOrder);
-            update_post_meta($order_id, 'authorizationCode', $authorizationCode);
-            update_post_meta($order_id, 'cardNumber', $finalResponse->cardDetail->cardNumber);
-            update_post_meta($order_id, 'paymenCodeResult', $paymenCodeResult);
-            update_post_meta($order_id, 'amount', $amount);
-            update_post_meta($order_id, 'coutas', $sharesNumber);
-            update_post_meta($order_id, 'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
+            update_post_meta($orderId, 'transactionResponse', $transactionResponse);
+            update_post_meta($orderId, 'buyOrder', $finalResponse->buyOrder);
+            update_post_meta($orderId, 'authorizationCode', $authorizationCode);
+            update_post_meta($orderId, 'cardNumber', $finalResponse->cardDetail->cardNumber);
+            update_post_meta($orderId, 'paymenCodeResult', $paymenCodeResult);
+            update_post_meta($orderId, 'amount', $amount);
+            update_post_meta($orderId, 'coutas', $sharesNumber);
+            update_post_meta($orderId, 'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
             
             echo '</br><h2>Detalles del pago</h2>' . '<table class="shop_table order_details">' . '<tfoot>' . '<tr>' . '<th scope="row">Respuesta de la Transacci&oacute;n:</th>' . '<td><span class="RT">' . $transactionResponse . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">C&oacute;digo de la Transacci&oacute;n:</th>' . '<td><span class="CT">' . $finalResponse->detailOutput->responseCode . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Orden de Compra:</th>' . '<td><span class="RT">' . $finalResponse->buyOrder . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Codigo de Autorizaci&oacute;n:</th>' . '<td><span class="CA">' . $finalResponse->detailOutput->authorizationCode . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Fecha Transacci&oacute;n:</th>' . '<td><span class="FC">' . $date_accepted->format('d-m-Y') . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row"> Hora Transacci&oacute;n:</th>' . '<td><span class="FT">' . $date_accepted->format('H:i:s') . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tarjeta de Cr&eacute;dito:</th>' . '<td><span class="TC">************' . $finalResponse->cardDetail->cardNumber . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tipo de Pago:</th>' . '<td><span class="TP">' . $paymentType . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Tipo de Cuota:</th>' . '<td><span class="TC">' . $installmentType . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">Monto Compra:</th>' . '<td><span class="amount">' . $finalResponse->detailOutput->amount . '</span></td>' . '</tr>' . '<tr>' . '<th scope="row">N&uacute;mero de Cuotas:</th>' . '<td><span class="NC">' . $finalResponse->detailOutput->sharesNumber . '</span></td>' . '</tr>' . '</tfoot>' . '</table><br/>';
         }
@@ -508,34 +554,37 @@ function woocommerce_transbank_init()
     }
 }
 
-function on_activation()
+function on_webpay_plugin_activation()
 {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
-    $transaction = $wpdb->prefix . "transaction";
+    $transaction = TransbankWebpayPlugin::getWebpayTransactionsTableName();
 
     $sql = "CREATE TABLE IF NOT EXISTS $transaction (
         id bigint(20) NOT NULL AUTO_INCREMENT,
-        buyorder varchar(60) NOT NULL,
+        order_id varchar(60) NOT NULL,
         amount bigint(20) NOT NULL,
         token varchar(100) NOT NULL,
-        sessionid varchar(100) NOT NULL,
+        status varchar(50) NOT NULL,
         PRIMARY KEY id(id)
     ) $charset_collate;";
     
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     $created = dbDelta($sql);
     woocommerce_transbank_init();
+    
     $pluginObject = new WC_Gateway_Transbank();
     $pluginObject->registerPluginVersion();
 }
 
+
 function transbank_remove_database() {
     global $wpdb;
-    $table_name = $wpdb->base_prefix . "transaction";
+    $table_name = TransbankWebpayPlugin::getWebpayTransactionsTableName();
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
     delete_option("transbank_db_version");
 }
-register_deactivation_hook( __FILE__, 'transbank_remove_database' );
+
+register_uninstall_hook( __FILE__, 'transbank_remove_database' );
