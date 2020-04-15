@@ -2,7 +2,7 @@
 
 use Transbank\WooCommerce\Webpay\Exceptions\TokenNotFoundOnDatabaseException;
 use Transbank\WooCommerce\Webpay\Telemetry\PluginVersion;
-use Transbank\WooCommerce\Webpay\TransbankWebpayPlugin;
+use Transbank\WooCommerce\Webpay\TransbankWebpayOrders;
 use Transbank\WooCommerce\Webpay\WordpressPluginVersion;
 
 if (!defined('ABSPATH')) {
@@ -38,6 +38,7 @@ require_once plugin_dir_path(__FILE__) . "libwebpay/ReportGenerator.php";
 require_once plugin_dir_path(__FILE__) . "libwebpay/TransbankSdkWebpay.php";
 
 register_activation_hook(__FILE__, 'on_webpay_plugin_activation');
+add_action( 'admin_init', 'on_transbank_webpay_plugins_loaded' );
 add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
 add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
 
@@ -252,12 +253,12 @@ function woocommerce_transbank_init()
                 $url = $result["url"];
                 $token_ws = $result["token_ws"];
 
-                global $wpdb;
-                $wpdb->insert(TransbankWebpayPlugin::getWebpayTransactionsTableName(), [
-                    'buyOrder' => $buyOrder,
+                TransbankWebpayOrders::createTransaction([
+                    'order_id' => $order_id,
                     'amount' => $amount,
                     'token' => $token_ws,
-                    'sessionid' => $sessionId,
+                    'session_id' => $sessionId,
+                    'status' => TransbankWebpayOrders::STATUS_INIT
                 ]);
 
                 self::redirect($url, ["token_ws" => $token_ws]);
@@ -301,7 +302,7 @@ function woocommerce_transbank_init()
 
             if ($this->transactionIsApproved($result) && $this->validateTransactionDetails($result, $webpayTransaction)) {
                 WC()->session->set($wooCommerceOrder->get_order_key() . "_transaction_paid", 1);
-                $this->completeWooCommerceOrder($wooCommerceOrder, $result, $order_id);
+                $this->completeWooCommerceOrder($wooCommerceOrder, $result);
                 return self::redirect($result->urlRedirection, ["token_ws" => $token_ws]);
             }
     
@@ -364,7 +365,7 @@ function woocommerce_transbank_init()
         private function getWebpayTransactionByToken($token_ws)
         {
             global $wpdb;
-            $transaction = TransbankWebpayPlugin::getWebpayTransactionsTableName();
+            $transaction = TransbankWebpayOrders::getWebpayTransactionsTableName();
             $sql = "SELECT * FROM $transaction WHERE token = '{$token_ws}'";
             $sqlResult = $wpdb->get_results($sql);
             if (!is_array($sqlResult) || count($sqlResult) <= 0) {
@@ -396,14 +397,14 @@ function woocommerce_transbank_init()
          * @param array $result
          * @param $order_id
          */
-        private function completeWooCommerceOrder(WC_Order $wooCommerceOrder, array $result, $order_id)
+        private function completeWooCommerceOrder(WC_Order $wooCommerceOrder, array $result)
         {
             $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
             $wooCommerceOrder->add_order_note(__(json_encode($result), 'woocommerce'));
             $wooCommerceOrder->payment_complete();
             $final_status = $this->config['STATUS_AFTER_PAYMENT'];
             $wooCommerceOrder->update_status($final_status);
-            wc_reduce_stock_levels($order_id);
+            wc_reduce_stock_levels($wooCommerceOrder->get_id());
         }
         /**
          * @param WC_Order $wooCommerceOrder
@@ -556,35 +557,18 @@ function woocommerce_transbank_init()
 
 function on_webpay_plugin_activation()
 {
-    global $wpdb;
-    $charset_collate = $wpdb->get_charset_collate();
-
-    $transaction = TransbankWebpayPlugin::getWebpayTransactionsTableName();
-
-    $sql = "CREATE TABLE IF NOT EXISTS $transaction (
-        id bigint(20) NOT NULL AUTO_INCREMENT,
-        order_id varchar(60) NOT NULL,
-        amount bigint(20) NOT NULL,
-        token varchar(100) NOT NULL,
-        status varchar(50) NOT NULL,
-        PRIMARY KEY id(id)
-    ) $charset_collate;";
-    
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    $created = dbDelta($sql);
     woocommerce_transbank_init();
     
     $pluginObject = new WC_Gateway_Transbank();
     $pluginObject->registerPluginVersion();
 }
 
+function on_transbank_webpay_plugins_loaded() {
+    TransbankWebpayOrders::createTableIfNeeded();
+}
 
 function transbank_remove_database() {
-    global $wpdb;
-    $table_name = TransbankWebpayPlugin::getWebpayTransactionsTableName();
-    $sql = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
-    delete_option("transbank_db_version");
+    TransbankWebpayOrders::deleteTable();
 }
 
 register_uninstall_hook( __FILE__, 'transbank_remove_database' );
