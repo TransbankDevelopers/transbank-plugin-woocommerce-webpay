@@ -4,6 +4,12 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2020-04-16
+### Feature
+- Cambia las sessiones por una tabla en la base de datos [PR #113](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/113)
+### Fixed
+- Arregla el tamaño de la imagen de pago [PR #108](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/108)
+
 ## [2.6.1] - 2020-03-19
 ### Fixed
 - Arregla posible error al llamar a API de telemetría [PR #105](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/105)
