@@ -7,8 +7,8 @@ class TransbankWebpayOrders
     const TRANSACTIONS_TABLE_NAME = 'webpay_transactions';
     
     const STATUS_FAILED = 'failed';
-    const STATUS_ABORTED = 'aborted';
-    const STATUS_INIT = 'initialized';
+    const STATUS_ABORTED_BY_USER = 'aborted_by_user';
+    const STATUS_INITIALIZED = 'initialized';
     const STATUS_REJECTED = 'rejected';
     const STATUS_APPROVED = 'approved';
     
@@ -31,7 +31,23 @@ class TransbankWebpayOrders
     
     public static function getByToken($token)
     {
+        global $wpdb;
+        $transaction = TransbankWebpayOrders::getWebpayTransactionsTableName();
+        $sql = "SELECT * FROM $transaction WHERE token = '{$token}'";
+        $sqlResult = $wpdb->get_results($sql);
+        if (!is_array($sqlResult) || count($sqlResult) <= 0) {
+            throw new TokenNotFoundOnDatabaseException("Token '{$token}' no se encontró en la base de datos de transacciones, por lo que no se puede completar el proceso");
+        }
+        $webpayTransaction = $sqlResult[0];
     
+        return $webpayTransaction;
+    }
+    
+    public static function update($transactionId, array $data)
+    {
+        global $wpdb;
+        $transaction = TransbankWebpayOrders::getWebpayTransactionsTableName();
+        return $wpdb->update($transaction, $data, ['id' => $transactionId]);
     }
     
     public static function isUpgraded()
@@ -61,10 +77,14 @@ class TransbankWebpayOrders
         $sql = "CREATE TABLE `{$transactionTableName}` (
             `id` bigint(20) NOT NULL AUTO_INCREMENT,
             `order_id` varchar(60) NOT NULL,
+            `buy_order` varchar(60) NOT NULL,
             `amount` bigint(20) NOT NULL,
             `token` varchar(100) NOT NULL,
             `session_id` varchar(100),
             `status` varchar(50) NOT NULL,
+            `transbank_response` LONGTEXT,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+            `created_at` TIMESTAMP NOT NULL  DEFAULT NOW(),
             PRIMARY KEY (id)
         ) $charset_collate";
         
