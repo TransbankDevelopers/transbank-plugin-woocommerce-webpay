@@ -1,6 +1,6 @@
 <?php
 
-use Transbank\Woocommerce\WordpressPluginVersion;
+use Transbank\WooCommerce\Webpay\WordpressPluginVersion;
 
 if (!defined('ABSPATH')) {
     exit;

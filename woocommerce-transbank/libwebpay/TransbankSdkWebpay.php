@@ -11,17 +11,18 @@ use Transbank\Webpay\Configuration;
 use Transbank\Webpay\Webpay;
 
 class TransbankSdkWebpay {
-
+    const ENVIRONMENT_INTEGRATION = 'INTEGRACION';
+    
     var $transaction;
 
     function __construct($config) {
         $this->log = new LogHandler();
         if (isset($config)) {
-            $environment = isset($config["MODO"]) ? $config["MODO"] : 'INTEGRACION';
+            $environment = isset($config["MODO"]) ? $config["MODO"] : static::ENVIRONMENT_INTEGRATION;
             $configuration = Configuration::forTestingWebpayPlusNormal();
             $configuration->setWebpayCert(Webpay::defaultCert($environment));
 
-            if ($environment != 'INTEGRACION') {
+            if ($environment != static::ENVIRONMENT_INTEGRATION) {
                 $configuration->setEnvironment($environment);
                 $configuration->setCommerceCode($config["COMMERCE_CODE"]);
                 $configuration->setPrivateKey($config["PRIVATE_KEY"]);
@@ -33,7 +34,7 @@ class TransbankSdkWebpay {
     }
 
     public function getWebPayCertDefault() {
-        return Webpay::defaultCert('INTEGRACION');
+        return Webpay::defaultCert(static::ENVIRONMENT_INTEGRATION);
     }
 
 	public function initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl) {
