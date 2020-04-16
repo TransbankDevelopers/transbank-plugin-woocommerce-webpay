@@ -34,10 +34,8 @@ class ResponseController
     
         $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->order_id);
     
-        WC()->session->set($wooCommerceOrder->get_order_key(), $result);
     
         if ($this->transactionIsApproved($result) && $this->validateTransactionDetails($result, $webpayTransaction)) {
-            WC()->session->set($wooCommerceOrder->get_order_key() . "_transaction_paid", 1);
             $this->completeWooCommerceOrder($wooCommerceOrder, $result, $webpayTransaction);
             RedirectorHelper::redirect($result->urlRedirection, ["token_ws" => $token_ws]);
         }

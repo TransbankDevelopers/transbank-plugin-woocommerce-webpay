@@ -69,7 +69,6 @@ class ThanksPageController
         }
         
         $finalResponse = json_decode($webpayTransaction->transbank_response);
-        WC()->session->set($order_info->get_order_key(), "");
         
         if (isset($finalResponse->detailOutput)) {
             $detailOutput = $finalResponse->detailOutput;
