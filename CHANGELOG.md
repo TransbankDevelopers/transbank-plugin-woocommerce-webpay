@@ -6,8 +6,9 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 
 ## [2.7.1] - 2020-04-27
 ### Fixed
-- Arregla el tamaño de la imagen de pago [PR #117](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/117)
-
+- Arregla error en caso de borde cuando el cliente vuelve a la URL de response después de haber pagado correctamente [PR #117](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/117)
+- Mejora en algunos textos [PR #118](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/118)
+- Arregla error en path de asset en el admin [PR #102](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/102)
 
 ## [2.7.0] - 2020-04-16
 ### Feature
