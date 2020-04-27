@@ -71,6 +71,8 @@ class ThanksPageController
         
         if ($webpayTransaction->status == TransbankWebpayOrders::STATUS_FAILED) {
             wc_print_notice('Transacción <strong>fallida</strong>. Puedes pagar volver a intentar el pago', 'error');
+        } elseif ($webpayTransaction->status == TransbankWebpayOrders::STATUS_APPROVED) {
+            wc_print_notice('Transacción aprobada', 'success');
         }
         
         $finalResponse = json_decode($webpayTransaction->transbank_response);
