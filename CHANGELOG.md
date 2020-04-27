@@ -4,6 +4,12 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] - 2020-04-27
+### Fixed
+- Arregla error en caso de borde cuando el cliente vuelve a la URL de response después de haber pagado correctamente [PR #117](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/117)
+- Mejora en algunos textos [PR #118](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/118)
+- Arregla error en path de asset en el admin [PR #102](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/102)
+
 ## [2.7.0] - 2020-04-16
 ### Feature
 - Cambia las sessiones por una tabla en la base de datos [PR #113](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/113)
