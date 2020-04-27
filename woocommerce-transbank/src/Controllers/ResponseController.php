@@ -29,18 +29,21 @@ class ResponseController
         $token_ws = $this->getTokenWs($postData);
     
         $webpayTransaction = TransbankWebpayOrders::getByToken($token_ws);
+        $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->order_id);
+        
+        if ($webpayTransaction->status != TransbankWebpayOrders::STATUS_INITIALIZED) {
+            wc_add_notice(__('Estimado cliente, le informamos que esta transacción ya ha sido pagada o rechazada.', 'woocommerce'), 'error');
+            return RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
+        }
         $transbankSdkWebpay = new TransbankSdkWebpay($this->pluginConfig);
         $result = $transbankSdkWebpay->commitTransaction($token_ws);
-    
-        $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->order_id);
-    
-    
+        
         if ($this->transactionIsApproved($result) && $this->validateTransactionDetails($result, $webpayTransaction)) {
             $this->completeWooCommerceOrder($wooCommerceOrder, $result, $webpayTransaction);
             RedirectorHelper::redirect($result->urlRedirection, ["token_ws" => $token_ws]);
         }
     
-        $this->setWooCommerceOrderAsFailed($wooCommerceOrder, $result, $webpayTransaction);
+        $this->setWooCommerceOrderAsFailed($wooCommerceOrder, $webpayTransaction, $result);
         RedirectorHelper::redirect($wooCommerceOrder->get_checkout_payment_url(), ["token_ws" => $token_ws]);
     }
     
@@ -88,6 +91,8 @@ class ResponseController
         $wooCommerceOrder->payment_complete();
         $final_status = $this->pluginConfig['STATUS_AFTER_PAYMENT'];
         $wooCommerceOrder->update_status($final_status);
+        
+        // Todo: eliminar esto, ya que $wooCommerceOrder->payment_complete() lo hace.
         wc_reduce_stock_levels($wooCommerceOrder->get_id());
         wc_empty_cart();
     
@@ -102,7 +107,7 @@ class ResponseController
         update_post_meta( $wooCommerceOrder->get_id(),  'cuotas', $sharesNumber);
         update_post_meta( $wooCommerceOrder->get_id(),  'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
     
-        wc_add_notice(__('Pago recibido sattisfactoriamente', 'woocommerce'));
+        wc_add_notice(__('Pago recibido satisfactoriamente', 'woocommerce'));
         TransbankWebpayOrders::update($webpayTransaction->id, ['status' => TransbankWebpayOrders::STATUS_APPROVED, 'transbank_response' => json_encode($result)]);
     }
     /**
@@ -110,13 +115,14 @@ class ResponseController
      * @param array $result
      * @param $webpayTransaction
      */
-    protected function setWooCommerceOrderAsFailed(WC_Order $wooCommerceOrder, $result, $webpayTransaction)
+    protected function setWooCommerceOrderAsFailed(WC_Order $wooCommerceOrder, $webpayTransaction, $result = null)
     {
-        $msg = 'Pago rechazado';
-        $wooCommerceOrder->add_order_note(__($msg, 'woocommerce'));
-        $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
+        $wooCommerceOrder->add_order_note(__('Pago rechazado', 'woocommerce'));
         $wooCommerceOrder->update_status('failed');
-        
+        if ($result !== null) {
+            $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
+        }
+    
         $error_message = "Estimado cliente, le informamos que su pago no ha sido efectuado correctamente";
         wc_add_notice(__($error_message, 'woocommerce'), 'error');
     

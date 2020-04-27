@@ -32,11 +32,16 @@ class ThanksPageController
             return;
         }
         $token = isset($_POST['token_ws']) ? $_POST['token_ws'] : (isset($_POST['TBK_TOKEN']) ? $_POST['TBK_TOKEN'] : null);
-        if ($token === null) {
+        $webpayTransaction = null;
+        if ($token !== null) {
+            $webpayTransaction = TransbankWebpayOrders::getByToken($token);
+        } elseif (isset($_POST['TBK_ORDEN_COMPRA']) && isset($_POST['TBK_ID_SESION'])) {
+            $webpayTransaction = TransbankWebpayOrders::getBySessionIdAndOrderId($_POST['TBK_ID_SESION'], $_POST['TBK_ORDEN_COMPRA']);
+        } else {
             throw new \Exception('Token not provided');
         }
         
-        $webpayTransaction = TransbankWebpayOrders::getByToken($token);
+        
         if (!$webpayTransaction) {
             throw new InvalidOrderException('Token inválido');
         }
