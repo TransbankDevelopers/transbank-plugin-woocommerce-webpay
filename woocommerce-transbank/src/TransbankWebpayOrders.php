@@ -2,6 +2,8 @@
 
 namespace Transbank\WooCommerce\Webpay;
 
+use Transbank\WooCommerce\Webpay\Exceptions\TokenNotFoundOnDatabaseException;
+
 class TransbankWebpayOrders
 {
     const TRANSACTIONS_TABLE_NAME = 'webpay_transactions';
@@ -33,13 +35,27 @@ class TransbankWebpayOrders
     {
         global $wpdb;
         $transaction = TransbankWebpayOrders::getWebpayTransactionsTableName();
-        $sql = "SELECT * FROM $transaction WHERE token = '{$token}'";
+        $sql = $wpdb->prepare("SELECT * FROM $transaction WHERE token = '%s'", $token);
         $sqlResult = $wpdb->get_results($sql);
         if (!is_array($sqlResult) || count($sqlResult) <= 0) {
             throw new TokenNotFoundOnDatabaseException("Token '{$token}' no se encontró en la base de datos de transacciones, por lo que no se puede completar el proceso");
         }
         $webpayTransaction = $sqlResult[0];
     
+        return $webpayTransaction;
+    }
+    
+    public static function getBySessionIdAndOrderId($TBK_ID_SESION, $TBK_ORDEN_COMPRA)
+    {
+        global $wpdb;
+        $transactionTableName = TransbankWebpayOrders::getWebpayTransactionsTableName();
+        $sql = $wpdb->prepare("SELECT * FROM $transactionTableName WHERE session_id = '%s' && order_id='%s'", $TBK_ID_SESION, $TBK_ORDEN_COMPRA);
+        $sqlResult = $wpdb->get_results($sql);
+        if (!is_array($sqlResult) || count($sqlResult) <= 0) {
+            throw new TokenNotFoundOnDatabaseException("No se encontró el session_id y order_id en la base de datos de transacciones, por lo que no se puede completar el proceso");
+        }
+        $webpayTransaction = $sqlResult[0];
+        
         return $webpayTransaction;
     }
     
@@ -105,5 +121,6 @@ class TransbankWebpayOrders
         $wpdb->query($sql);
         delete_option(static::TABLE_VERSION_OPTION_KEY);
     }
+    
     
 }
