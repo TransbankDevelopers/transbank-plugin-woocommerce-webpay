@@ -31,7 +31,7 @@ class ThanksPageController
         if ($order_info->get_payment_method_title() != $transbank_data->title) {
             return;
         }
-        $token = isset($_POST['token_ws']) ? $_POST['token_ws'] : (isset($_POST['TBK_TOKEN']) ? $_POST['TBK_TOKEN'] : null);
+        $token = isset($_POST['token_ws']) ? $_POST['token_ws'] : (isset($_POST['TBK_TOKEN']) ? $_POST['TBK_TOKEN'] : isset($_GET['token_ws']) ? $_GET['token_ws'] : null);
         $webpayTransaction = null;
         if ($token !== null) {
             $webpayTransaction = TransbankWebpayOrders::getByToken($token);

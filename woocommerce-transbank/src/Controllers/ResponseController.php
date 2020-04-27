@@ -27,13 +27,12 @@ class ResponseController
     public function response($postData)
     {
         $token_ws = $this->getTokenWs($postData);
-    
         $webpayTransaction = TransbankWebpayOrders::getByToken($token_ws);
         $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->order_id);
-        
+    
         if ($webpayTransaction->status != TransbankWebpayOrders::STATUS_INITIALIZED) {
             wc_add_notice(__('Estimado cliente, le informamos que esta transacción ya ha sido pagada o rechazada.', 'woocommerce'), 'error');
-            return RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
+            RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
         }
         $transbankSdkWebpay = new TransbankSdkWebpay($this->pluginConfig);
         $result = $transbankSdkWebpay->commitTransaction($token_ws);
@@ -44,7 +43,7 @@ class ResponseController
         }
     
         $this->setWooCommerceOrderAsFailed($wooCommerceOrder, $webpayTransaction, $result);
-        RedirectorHelper::redirect($wooCommerceOrder->get_checkout_payment_url(), ["token_ws" => $token_ws]);
+        RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
     }
     
     /**
