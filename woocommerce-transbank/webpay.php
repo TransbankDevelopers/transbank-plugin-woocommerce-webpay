@@ -74,7 +74,7 @@ function woocommerce_transbank_init()
             $this->method_title = __('Transbank Webpay Plus');
             $this->notify_url = add_query_arg('wc-api', 'WC_Gateway_' . $this->id, home_url('/'));
             $this->title = 'Transbank Webpay';
-            $this->description = 'Permite el pago de productos y/o servicios, con Tarjetas de Cr&eacute;dito y Redcompra a trav&eacute;s de Webpay Plus';
+            $this->description = 'Permite el pago de productos y/o servicios, con tarjetas de cr&eacute;dito y Redcompra a trav&eacute;s de Webpay Plus';
             $this->plugin_url = plugins_url('/', __FILE__);
             $this->log = new LogHandler();
             
@@ -134,7 +134,6 @@ function woocommerce_transbank_init()
         
         public function checkConnection()
         {
-            global $wpdb;
             require_once('ConfigProvider.php');
             require_once('HealthCheck.php');
             
@@ -246,7 +245,7 @@ function woocommerce_transbank_init()
         function receipt_page($order_id)
         {
             $order = new WC_Order($order_id);
-            $amount = (int)number_format($order->get_total(), 0, ',', '');
+            $amount = (int) number_format($order->get_total(), 0, ',', '');
             $sessionId = uniqid();
             $buyOrder = $order_id;
             $returnUrl = self::$URL_RETURN;
@@ -257,27 +256,26 @@ function woocommerce_transbank_init()
             $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
             $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
             
-            if (isset($result["token_ws"])) {
-
-                $url = $result["url"];
-                $token_ws = $result["token_ws"];
-
-                TransbankWebpayOrders::createTransaction([
-                    'order_id' => $order_id,
-                    'buy_order' => $buyOrder,
-                    'amount' => $amount,
-                    'token' => $token_ws,
-                    'session_id' => $sessionId,
-                    'status' => TransbankWebpayOrders::STATUS_INITIALIZED
-                ]);
-
-                RedirectorHelper::redirect($url, ["token_ws" => $token_ws]);
-                
-            } else {
+            if (!isset($result["token_ws"])) {
                 wc_add_notice(__('ERROR: ',
-                        'woocommerce') . 'Ocurri&oacute; un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
+                        'woocommerce') . 'Ocurrió un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
                     'error');
+                return;
             }
+
+            $url = $result["url"];
+            $token_ws = $result["token_ws"];
+
+            TransbankWebpayOrders::createTransaction([
+                'order_id' => $order_id,
+                'buy_order' => $buyOrder,
+                'amount' => $amount,
+                'token' => $token_ws,
+                'session_id' => $sessionId,
+                'status' => TransbankWebpayOrders::STATUS_INITIALIZED
+            ]);
+
+            RedirectorHelper::redirect($url, ["token_ws" => $token_ws]);
         }
         
         /**
@@ -290,7 +288,7 @@ function woocommerce_transbank_init()
                 header('HTTP/1.1 200 OK');
                 return (new ResponseController($this->config))->response($_POST);
             } else {
-                echo "Ocurrio un error al procesar su Compra";
+                echo "Ocurrio un error al procesar su compra";
             }
         }
         
