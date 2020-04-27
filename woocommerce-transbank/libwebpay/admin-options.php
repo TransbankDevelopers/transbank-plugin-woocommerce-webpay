@@ -11,7 +11,7 @@
 <h3><?php _e('Transbank Webpay', 'woocommerce'); ?></h3>
 <p><?php _e('Transbank es la empresa l&iacute;der en negocios de medio de pago seguros en Chile.'); ?></p>
 
-<a class ="button " data-toggle="modal" href="#tb_modal">Informacion del sistema</a>
+<a class ="button " data-toggle="modal" href="#tb_modal">Información del sistema</a>
 <hr>
 
 <table class="form-table">
@@ -41,7 +41,7 @@
                             </a>
                         </fieldset>
                         
-                        <h3 class="tbk_title_h3">Información de Plugin / Ambiente</h3>
+                        <h3 class="tbk_title_h3">Información de plugin / Ambiente</h3>
                         <table class="tbk_table_info">
                             <tr>
                                 <td>
@@ -55,7 +55,7 @@
                             <tr>
                                 <td>
                                     <div title="Versión de <?php echo $datos_hc->server_resume->plugin_info->ecommerce; ?> instalada en el servidor" class="label label-info">?</div>
-                                    <strong>Version E-commerce: </strong>
+                                    <strong>Versión E-commerce: </strong>
                                 </td>
                                 <td class="tbk_table_td">
                                     <?php echo $datos_hc->server_resume->plugin_info->ecommerce_version; ?>
@@ -103,7 +103,7 @@
                             <tr>
                                 <td>
                                     <div title="Informa si el código de comercio ingresado por el usuario corresponde al certificado entregado por Transbank" class="label label-info">?</div>
-                                    <strong>Validación Código de comercio: </strong>
+                                    <strong>Validación código de comercio: </strong>
                                 </td>
                                 <td class="tbk_table_td">
                                                 <span class="label
@@ -288,12 +288,12 @@
                         </table>
                         <br>
                         
-                        <h3 class="menu-head">Validaci&oacute;n Transacci&oacute;n</h3>
+                        <h3 class="menu-head">Validación transacción</h3>
                         <table class="table table-striped">
                             <tbody>
                             <tr>
                                 <td>
-                                    <button class="check_conn btn btn-sm btn-primary">Verificar Conexión</button>
+                                    <button class="check_conn btn btn-sm btn-primary">Verificar conexión</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -400,11 +400,11 @@
                                     </tr>
                                 </table>
                                 <div class="tbk_btn tbk_danger_btn" onclick="javascript:updateConfig()" href="" target="_blank">
-                                    Actualizar Parametros
+                                    Actualizar parámetros
                                 </div>
                             </div>
                             
-                            <h3 class="tbk_title_h3">Información de Registros</h3>
+                            <h3 class="tbk_title_h3">Información de registros</h3>
                             <table class="tbk_table_info">
                                 <tr style="display: none; visibility: hidden">
                                     <td><div title="Informa si actualmente se guarda la información de cada compra mediante Webpay" class="label label-info">?</div> <strong>Estado de Registros: </strong></td>
@@ -437,22 +437,22 @@
                                 </tr>
                             </table>
                             
-                            <h3 class="tbk_title_h3">Últimos Registros</h3>
+                            <h3 class="tbk_title_h3">Últimos registros</h3>
                             <table class="tbk_table_info">
                                 <tr>
-                                    <td><div title="Nombre del útimo archivo de registro creado" class="label label-info">?</div> <strong>Último Documento: </strong></td>
+                                    <td><div title="Nombre del útimo archivo de registro creado" class="label label-info">?</div> <strong>Último documento: </strong></td>
                                     <td class="tbk_table_td">
                                         <?php echo isset(json_decode($this->log->getLastLog(), true)['log_file']) ? json_decode($this->log->getLastLog(), true)['log_file'] : null; ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><div title="Peso del último archivo de registro creado" class="label label-info">?</div> <strong>Peso del Documento: </strong></td>
+                                    <td><div title="Peso del último archivo de registro creado" class="label label-info">?</div> <strong>Peso del documento: </strong></td>
                                     <td class="tbk_table_td">
                                         <?php echo isset(json_decode($this->log->getLastLog(), true)['log_weight']) ? json_decode($this->log->getLastLog(), true)['log_weight'] : null; ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><div title="Cantidad de líneas que posee el último archivo de registro creado" class="label label-info">?</div> <strong>Cantidad de Líneas: </strong></td>
+                                    <td><div title="Cantidad de líneas que posee el último archivo de registro creado" class="label label-info">?</div> <strong>Cantidad de líneas: </strong></td>
                                     <td class="tbk_table_td">
                                         <?php echo isset(json_decode($this->log->getLastLog(), true)['log_regs_lines']) ? json_decode($this->log->getLastLog(), true)['log_regs_lines'] : null; ?>
                                     </td>
