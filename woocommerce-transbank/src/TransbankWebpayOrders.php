@@ -8,10 +8,9 @@ class TransbankWebpayOrders
 {
     const TRANSACTIONS_TABLE_NAME = 'webpay_transactions';
     
+    const STATUS_INITIALIZED = 'initialized';
     const STATUS_FAILED = 'failed';
     const STATUS_ABORTED_BY_USER = 'aborted_by_user';
-    const STATUS_INITIALIZED = 'initialized';
-    const STATUS_REJECTED = 'rejected';
     const STATUS_APPROVED = 'approved';
     
     const TABLE_VERSION_OPTION_KEY = 'webpay_orders_table_version';
@@ -43,6 +42,16 @@ class TransbankWebpayOrders
         $webpayTransaction = $sqlResult[0];
     
         return $webpayTransaction;
+    }
+    
+    public static function getApprovedByOrderId($orderId)
+    {
+        global $wpdb;
+        $transaction = static::getWebpayTransactionsTableName();
+        $statusApproved = static::STATUS_APPROVED;
+        $sql = $wpdb->prepare("SELECT * FROM $transaction WHERE status = '$statusApproved' AND order_id = '%s'",  $orderId);
+        $sqlResult = $wpdb->get_results($sql);
+        return isset($sqlResult[0]) ? $sqlResult[0] : null;
     }
     
     public static function getBySessionIdAndOrderId($TBK_ID_SESION, $TBK_ORDEN_COMPRA)
@@ -99,7 +108,7 @@ class TransbankWebpayOrders
             `session_id` varchar(100),
             `status` varchar(50) NOT NULL,
             `transbank_response` LONGTEXT,
-            `updated_at` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+            `updated_at` TIMESTAMP NOT NULL,
             `created_at` TIMESTAMP NOT NULL  DEFAULT NOW(),
             PRIMARY KEY (id)
         ) $charset_collate";
