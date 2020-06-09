@@ -4,6 +4,12 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2020-06-09
+### Fixed
+- Cuando el usuario anula la compra en el formulario de webpay, ya no se borra el carrito de compras y la orden queda en estado 'Cancelled' en vez de 'Failed' [PR #124](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/124) [Issue #120](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/116) y [Issue #116](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/120)
+- En algunos casos de borde, la orden que era pagada correctamente, seguidamente se marcaba como pendiente de pago. Eso ya no pasa. [PR #124](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/124) [Issue #122](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/122)
+- Ahora la tabla webpay_transactions ahora se crea correctamente en MySQL 5.5 [PR #124](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/124)
+
 ## [2.7.1] - 2020-04-27
 ### Fixed
 - Arregla error en caso de borde cuando el cliente vuelve a la URL de response después de haber pagado correctamente [PR #117](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/117)
