@@ -371,7 +371,10 @@ function add_action_links($links)
 function on_webpay_plugin_activation()
 {
     woocommerce_transbank_init();
-    
+    if (!class_exists(WC_Gateway_Transbank::class)) {
+        die('Se necesita tener WooCommerce instalado y activo para poder activar este plugin');
+        return;
+    }
     $pluginObject = new WC_Gateway_Transbank();
     $pluginObject->registerPluginVersion();
 }
