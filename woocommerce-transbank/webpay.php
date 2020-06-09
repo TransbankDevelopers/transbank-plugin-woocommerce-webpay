@@ -1,9 +1,11 @@
 <?php
 
 use Transbank\WooCommerce\Webpay\Controllers\ResponseController;
-use Transbank\WooCommerce\Webpay\Controllers\ThanksPageController;
+use Transbank\WooCommerce\Webpay\Controllers\FinalProcessController;
+use Transbank\WooCommerce\Webpay\Controllers\ThankYouPageController;
 use Transbank\WooCommerce\Webpay\Exceptions\TokenNotFoundOnDatabaseException;
 use Transbank\WooCommerce\Webpay\Helpers\RedirectorHelper;
+use Transbank\WooCommerce\Webpay\Helpers\SessionMessageHelper;
 use Transbank\WooCommerce\Webpay\Telemetry\PluginVersion;
 use Transbank\WooCommerce\Webpay\TransbankWebpayOrders;
 use Transbank\WooCommerce\Webpay\WordpressPluginVersion;
@@ -46,8 +48,18 @@ add_action( 'admin_init', 'on_transbank_webpay_plugins_loaded' );
 add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
 add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
 add_filter('woocommerce_payment_gateways', 'woocommerce_add_transbank_gateway');
+add_action('woocommerce_before_cart', function() {
+    SessionMessageHelper::print();
+});
 
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links');
+
+//Start sessions if not already done
+add_action('init',function() {
+    if( !session_id() ) {
+        session_start();
+    }
+});
 
 function woocommerce_transbank_init()
 {
@@ -67,7 +79,7 @@ function woocommerce_transbank_init()
         {
             
             self::$URL_RETURN = home_url('/') . '?wc-api=WC_Gateway_transbank';
-            self::$URL_FINAL = '_URL_';
+            self::$URL_FINAL = home_url('/') . '?wc-api=TransbankWebpayThankYouPage';;
             
             $this->id = 'transbank';
             $this->icon = plugin_dir_url(__FILE__ ) . 'libwebpay/images/webpay.png';
@@ -115,7 +127,8 @@ function woocommerce_transbank_init()
             $this->init_form_fields();
             $this->init_settings();
     
-            add_action('woocommerce_thankyou', [new ThanksPageController($this->config), 'show'], 1);
+            add_action('woocommerce_thankyou', [new ThankYouPageController($this->config), 'show'], 1);
+            add_action('woocommerce_api_transbankwebpaythankyoupage', [new FinalProcessController($this->config), 'show']);
             add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'registerPluginVersion']);
@@ -257,8 +270,7 @@ function woocommerce_transbank_init()
             $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
             
             if (!isset($result["token_ws"])) {
-                wc_add_notice(__('ERROR: ',
-                        'woocommerce') . 'Ocurrió un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
+                wc_add_notice( 'Ocurrió un error al intentar conectar con WebPay Plus. Por favor intenta mas tarde.<br/>',
                     'error');
                 return;
             }
