@@ -4,6 +4,14 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.3] - 2020-06-10
+### Fixed
+- Se arregla error que provoca excepción si una orden se paga con otro medio de pago [Issuee #127](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/127)
+- Se arregla error generado al iniciar las sesiones de PHP si ya se habían enviado headers  [Issuee #127](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/127)
+### Added
+- Se agrega posibilidad de traducir mensajes dentro del plugin [Issuee #127](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/128)
+
+
 ## [2.7.2] - 2020-06-09
 ### Fixed
 - Cuando el usuario anula la compra en el formulario de webpay, ya no se borra el carrito de compras y la orden queda en estado 'Cancelled' en vez de 'Failed' [PR #124](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/124) [Issue #120](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/116) y [Issue #116](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/issues/120)
