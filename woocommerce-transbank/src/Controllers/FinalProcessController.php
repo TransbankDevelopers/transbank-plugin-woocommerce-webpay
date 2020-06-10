@@ -74,7 +74,7 @@ class FinalProcessController
     protected function setOrderAsCancelledByUser(WC_Order $order_info, $webpayTransaction)
     {
 // Transaction aborted by user
-        $order_info->add_order_note(__('Pago abortado por el usuario', 'woocommerce'));
+        $order_info->add_order_note(__('Pago abortado por el usuario', 'transbank_webpay'));
         $order_info->update_status('cancelled');
         TransbankWebpayOrders::update($webpayTransaction->id,
             ['status' => TransbankWebpayOrders::STATUS_ABORTED_BY_USER]);
@@ -99,7 +99,7 @@ class FinalProcessController
         }
         
         if (!$webpayTransaction) {
-            throw new InvalidOrderException('Token inválido');
+            throw new InvalidOrderException('Invalid token');
         }
         
         return $webpayTransaction;
