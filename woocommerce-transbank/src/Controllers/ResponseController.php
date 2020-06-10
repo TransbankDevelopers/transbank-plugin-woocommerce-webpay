@@ -33,7 +33,7 @@ class ResponseController
         
         if ($webpayTransaction->status != TransbankWebpayOrders::STATUS_INITIALIZED) {
             wc_add_notice(__('Estimado cliente, le informamos que esta transacción ya ha sido pagada o rechazada.',
-                'woocommerce'), 'error');
+                'transbank_webpay'), 'error');
             return RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
         }
         
@@ -77,7 +77,7 @@ class ResponseController
     protected function throwError($msg)
     {
         $error_message = "Estimado cliente, le informamos que su orden termin&oacute; de forma inesperada: <br />" . $msg;
-        wc_add_notice(__('ERROR: ', 'woocommerce') . $error_message, 'error');
+        wc_add_notice(__('ERROR: ', 'transbank_webpay') . $error_message, 'error');
         die();
     }
     
@@ -88,7 +88,7 @@ class ResponseController
      */
     protected function completeWooCommerceOrder(WC_Order $wooCommerceOrder, $result, $webpayTransaction)
     {
-        $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'woocommerce'));
+        $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'transbank_webpay'));
         $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
         $wooCommerceOrder->payment_complete();
         $final_status = $this->pluginConfig['STATUS_AFTER_PAYMENT'];
@@ -106,7 +106,7 @@ class ResponseController
         update_post_meta($wooCommerceOrder->get_id(), 'cuotas', $sharesNumber);
         update_post_meta($wooCommerceOrder->get_id(), 'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
         
-        wc_add_notice(__('Pago recibido satisfactoriamente', 'woocommerce'));
+        wc_add_notice(__('Pago recibido satisfactoriamente', 'transbank_webpay'));
         TransbankWebpayOrders::update($webpayTransaction->id,
             ['status' => TransbankWebpayOrders::STATUS_APPROVED, 'transbank_response' => json_encode($result)]);
     }
@@ -118,7 +118,7 @@ class ResponseController
     protected function setWooCommerceOrderAsFailed(WC_Order $wooCommerceOrder, $webpayTransaction, $result = null)
     {
         $_SESSION['woocommerce_order_failed'] = true;
-        $wooCommerceOrder->add_order_note(__('Pago rechazado', 'woocommerce'));
+        $wooCommerceOrder->add_order_note(__('Pago rechazado', 'transbank_webpay'));
         $wooCommerceOrder->update_status('failed');
         if ($result !== null) {
             $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));

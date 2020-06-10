@@ -205,47 +205,47 @@ function woocommerce_transbank_init()
         {
             $this->form_fields = [
                 'enabled' => [
-                    'title' => __('Activar/Desactivar', 'woocommerce'),
+                    'title' => __('Activar/Desactivar', 'transbank_webpay'),
                     'type' => 'checkbox',
                     'default' => 'yes'
                 ],
                 'webpay_test_mode' => [
-                    'title' => __('Ambiente', 'woocommerce'),
+                    'title' => __('Ambiente', 'transbank_webpay'),
                     'type' => 'select',
                     'options' => [
-                        'INTEGRACION' => 'Integraci&oacute;n',
-                        'PRODUCCION' => 'Producci&oacute;n'
+                        'INTEGRACION' => __('Integraci&oacute;n', 'transbank_webpay'),
+                        'PRODUCCION' => __('Producci&oacute;n', 'transbank_webpay')
                     ],
                     'default' => 'INTEGRACION'
                 ],
                 'webpay_commerce_code' => [
-                    'title' => __('C&oacute;digo de Comercio', 'woocommerce'),
+                    'title' => __('C&oacute;digo de Comercio', 'transbank_webpay'),
                     'type' => 'text',
-                    'default' => __($this->config['COMMERCE_CODE'], 'woocommerce')
+                    'default' => $this->config['COMMERCE_CODE']
                 ],
                 'webpay_private_key' => [
-                    'title' => __('Llave Privada', 'woocommerce'),
+                    'title' => __('Llave Privada', 'transbank_webpay'),
                     'type' => 'textarea',
-                    'default' => __(str_replace("<br/>", "\n", $this->config['PRIVATE_KEY']), 'woocommerce'),
+                    'default' => str_replace("<br/>", "\n", $this->config['PRIVATE_KEY']),
                     'css' => 'font-family: monospace'
                 ],
                 'webpay_public_cert' => [
-                    'title' => __('Certificado', 'woocommerce'),
+                    'title' => __('Certificado', 'transbank_webpay'),
                     'type' => 'textarea',
-                    'default' => __(str_replace("<br/>", "\n", $this->config['PUBLIC_CERT']), 'woocommerce'),
+                    'default' => str_replace("<br/>", "\n", $this->config['PUBLIC_CERT']),
                     'css' => 'font-family: monospace'
                 ],
                 'after_payment_order_status' => [
-                    'title' => __('Estado de pedido después del pago'),
+                    'title' => __('Estado de pedido después del pago', 'transbank_webpay'),
                     'type' => 'select',
                     'options' => [
-                        'wc-pending' => 'Pendiente',
-                        'wc-processing' => 'Procesando',
-                        'wc-on-hold' => 'Retenido',
-                        'wc-completed' => 'Completado',
-                        'wc-cancelled' => 'Cancelado',
-                        'wc-refunded' => 'Reembolsado',
-                        'wc-failed' => 'Fallido'
+                        'wc-pending' => __('Pendiente', 'transbank_webpay'),
+                        'wc-processing' => __('Procesando', 'transbank_webpay'),
+                        'wc-on-hold' => __('Retenido', 'transbank_webpay'),
+                        'wc-completed' => __('Completado', 'transbank_webpay'),
+                        'wc-cancelled' => __('Cancelado', 'transbank_webpay'),
+                        'wc-refunded' => __('Reembolsado', 'transbank_webpay'),
+                        'wc-failed' => __('Fallido', 'transbank_webpay')
                     ],
                     'default' => 'wc-processing'
                 ]
