@@ -14,7 +14,7 @@ class ThankYouPageController
         $order_info = new WC_Order($orderId);
         $transbank_data = new WC_Gateway_transbank();
         if ($order_info->get_payment_method_title() != $transbank_data->title) {
-            throw new \Exception('Esta transacción no fue pagada con Webpay');
+            return;
         }
     
         $webpayTransaction = TransbankWebpayOrders::getApprovedByOrderId($orderId);
