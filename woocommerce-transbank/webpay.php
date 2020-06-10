@@ -56,7 +56,7 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links
 
 //Start sessions if not already done
 add_action('init',function() {
-    if( !session_id() ) {
+    if( !headers_sent() && '' == session_id() ) {
         session_start();
     }
 });
