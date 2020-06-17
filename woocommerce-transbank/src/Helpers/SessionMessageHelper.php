@@ -34,7 +34,7 @@ class SessionMessageHelper
         return isset($_SESSION[static::TBK_MESSAGE_SESSION_KEY]) && $_SESSION[static::TBK_MESSAGE_SESSION_KEY] !== null;
     }
     
-    public static function print()
+    public static function printMessage()
     {
         if (static::exists()) {
             wc_print_notice(static::getMessage(), static::getType());
