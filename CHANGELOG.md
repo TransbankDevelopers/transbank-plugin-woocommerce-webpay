@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.4] - 2020-06-17
+### Fixed
+- Se arregle error en PHP <= 5.6 por uso de reserved keyword 'print' en el nombre de un método. [#PR 131](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/131) 
+
 ## [2.7.3] - 2020-06-10
 ### Fixed
 - Se arregla error que provoca excepción si una orden se paga con otro medio de pago [Issuee #127](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/pull/127)
