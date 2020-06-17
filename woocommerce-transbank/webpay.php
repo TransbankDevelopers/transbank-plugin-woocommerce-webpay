@@ -49,7 +49,7 @@ add_action('wp_ajax_check_connection', 'ConnectionCheck::check');
 add_action('wp_ajax_download_report', 'Transbank\Woocommerce\ReportGenerator::download');
 add_filter('woocommerce_payment_gateways', 'woocommerce_add_transbank_gateway');
 add_action('woocommerce_before_cart', function() {
-    SessionMessageHelper::print();
+    SessionMessageHelper::printMessage();
 });
 
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links');
