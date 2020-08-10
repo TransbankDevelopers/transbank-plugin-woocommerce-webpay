@@ -2,6 +2,7 @@
 
 namespace Transbank\WooCommerce\Webpay;
 
+use LogHandler;
 use Transbank\WooCommerce\Webpay\Exceptions\TokenNotFoundOnDatabaseException;
 
 class TransbankWebpayOrders
@@ -40,7 +41,7 @@ class TransbankWebpayOrders
             throw new TokenNotFoundOnDatabaseException("Token '{$token}' no se encontró en la base de datos de transacciones, por lo que no se puede completar el proceso");
         }
         $webpayTransaction = $sqlResult[0];
-    
+        
         return $webpayTransaction;
     }
     
@@ -98,7 +99,7 @@ class TransbankWebpayOrders
         $charset_collate = $wpdb->get_charset_collate();
         
         $transactionTableName = static::getWebpayTransactionsTableName();
-    
+        
         $sql = "CREATE TABLE `{$transactionTableName}` (
             `id` bigint(20) NOT NULL AUTO_INCREMENT,
             `order_id` varchar(60) NOT NULL,
@@ -108,7 +109,6 @@ class TransbankWebpayOrders
             `session_id` varchar(100),
             `status` varchar(50) NOT NULL,
             `transbank_response` LONGTEXT,
-            `updated_at` TIMESTAMP NOT NULL,
             `created_at` TIMESTAMP NOT NULL  DEFAULT NOW(),
             PRIMARY KEY (id)
         ) $charset_collate";
@@ -118,6 +118,13 @@ class TransbankWebpayOrders
         $success = empty( $wpdb->last_error );
         if ($success) {
             update_site_option( static::TABLE_VERSION_OPTION_KEY, static::LATEST_TABLE_VERSION );
+        } else {
+            $log = new LogHandler();
+            $log->logError('Error creating webpay_orders table');
+            $log->logError($wpdb->last_error);
+            
+            add_settings_error('transbank_webpay_orders_table_error', '', 'Transbank Webpay: Error creando tabla webpay_orders: ' . $wpdb->last_error, 'error');
+            settings_errors( 'transbank_webpay_orders_table_error' );
         }
         
         return $success;
