@@ -57,6 +57,12 @@ Para testear los ejemplos estos estan disponibles en:
 - [WooCommerce 3.9.1 con php 7.3](./docker-woocommerce-php7.3)
 - [WooCommerce 3.9.1 con php 7.4](./docker-woocommerce-php7.4)
 
+Si necesitas subir el plugin a Woocommerce y obtienes un error por que no se puede mover el archivo a `wp-contentent` entonces ejecuta
+
+```bash
+docker-compose run webserver chmod -Rv 767 wp-content/
+```
+
 ### Actualizar versión del SDK de Transbank
 Para actualizar la versión del SDK de Transbank se debe editar el archivo [composer.json](./woocommerce-transbank/composer.json) y cambiar
 el valor de la propiedad `"transbank/transbank-sdk"` por la versión que se desea instalar y luego ejecutar el bash `update`
