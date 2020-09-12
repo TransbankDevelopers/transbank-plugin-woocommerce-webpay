@@ -33,6 +33,9 @@ if (!defined('ABSPATH')) {
  * WC tested up to: 4.0.1
  */
 
+//Constante path base del plugin
+define( 'TBK_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
 add_action('plugins_loaded', 'woocommerce_transbank_init', 0);
 
 //todo: Eliminar todos estos require y usar PSR-4 de composer
