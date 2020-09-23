@@ -128,7 +128,7 @@ function woocommerce_transbank_init()
             
             $this->init_form_fields();
             $this->init_settings();
-    
+            
             add_action('woocommerce_thankyou', [new ThankYouPageController($this->config), 'show'], 1);
             add_action('woocommerce_api_transbankwebpaythankyoupage', [new FinalProcessController($this->config), 'show']);
             add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
@@ -227,18 +227,21 @@ function woocommerce_transbank_init()
                 ],
                 'webpay_private_key' => [
                     'title' => __('Llave Privada', 'transbank_webpay'),
+                    'description' => __('Contenido de archivo con extensión .key'),
                     'type' => 'textarea',
                     'default' => str_replace("<br/>", "\n", $this->config['PRIVATE_KEY']),
                     'css' => 'font-family: monospace'
                 ],
                 'webpay_public_cert' => [
                     'title' => __('Certificado', 'transbank_webpay'),
+                    'description' => __('Contenido de archivo con extensión .crt'),
                     'type' => 'textarea',
                     'default' => str_replace("<br/>", "\n", $this->config['PUBLIC_CERT']),
                     'css' => 'font-family: monospace'
                 ],
                 'after_payment_order_status' => [
-                    'title' => __('Estado de pedido después del pago', 'transbank_webpay'),
+                    'title' => __('Estado de pedido después del pago.'),
+                    'description' => __('<strong style="color:red;">DEPRECADO</strong>: Se eliminará en proximas versiones', 'transbank_webpay'),
                     'type' => 'select',
                     'options' => [
                         'wc-pending' => __('Pendiente', 'transbank_webpay'),
