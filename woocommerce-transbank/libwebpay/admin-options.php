@@ -1,12 +1,10 @@
 <?php $datos_hc = json_decode($this->healthcheck->printFullResume()); ?>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<link href="<?php echo TBK_PLUGIN_URL ?>css/bootstrap-switch.css" rel="stylesheet">
-<link href="<?php echo TBK_PLUGIN_URL ?>css/tbk.css" rel="stylesheet">
+<link href="<?php echo TBK_PLUGIN_URL ?>css/bootstrap-3.3.7.min.css" rel="stylesheet">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://unpkg.com/bootstrap-switch"></script>
+<script src="<?php echo TBK_PLUGIN_URL ?>js/jquery-3.2.1.min.js"></script>
+<script src="<?php echo TBK_PLUGIN_URL ?>js/bootstrap-3.3.7.min.js"></script>
+<script src="<?php echo TBK_PLUGIN_URL ?>js/bootstrap-switch.js"></script>
 
 <h3><?php _e('Transbank Webpay', 'woocommerce'); ?></h3>
 <p><?php _e('Transbank es la empresa l&iacute;der en negocios de medio de pago seguros en Chile.'); ?></p>

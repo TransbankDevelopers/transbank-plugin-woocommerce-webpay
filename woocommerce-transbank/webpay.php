@@ -146,7 +146,7 @@ function woocommerce_transbank_init()
         }
         public function enqueueScripts()
         {
-            wp_enqueue_script('ajax-script', plugins_url('/js/admin.js', __FILE__), ['jquery']);
+            wp_enqueue_script('ajax-script', TBK_PLUGIN_URL.'js/admin.js', ['jquery']);
             wp_localize_script('ajax-script', 'ajax_object', ['ajax_url' => admin_url('admin-ajax.php')]);
         }
         
