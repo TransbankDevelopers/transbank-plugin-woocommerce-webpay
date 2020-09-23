@@ -30,11 +30,24 @@ class ResponseController
         $token_ws = $this->getTokenWs($postData);
         $webpayTransaction = TransbankWebpayOrders::getByToken($token_ws);
         $wooCommerceOrder = $this->getWooCommerceOrderById($webpayTransaction->order_id);
-        
-        if ($webpayTransaction->status != TransbankWebpayOrders::STATUS_INITIALIZED) {
-            wc_add_notice(__('Estimado cliente, le informamos que esta transacción ya ha sido pagada o rechazada.',
-                'transbank_webpay'), 'error');
-            return RedirectorHelper::redirect($wooCommerceOrder->get_checkout_order_received_url(), ['token_ws' => $token_ws]);
+
+        if ($wooCommerceOrder->is_paid()) {
+            // TODO: Revisar porqué no se muestra el mensaje de abajo. H4x
+            //SessionMessageHelper::set('Orden <strong>ya ha sido pagada</strong>.', 'notice');
+            $wooCommerceOrder->add_order_note('El usuario intentó pagar esta orden cuando ya ' . 
+                'estaba pagada, no se ejecutó captura del pago y este se debería reversar en ' .
+                'los próximos días.');
+            return wp_safe_redirect($wooCommerceOrder->get_checkout_order_received_url());
+        } 
+
+        if (!$wooCommerceOrder->needs_payment()) {
+            // TODO: Revisar porqué no se muestra el mensaje de abajo. 
+            //SessionMessageHelper::set('El estado de la orden no permite que sea pagada. Comuníquese con la tienda.', 'error');
+            $wooCommerceOrder->add_order_note('El usuario intentó pagar la orden cuando estaba en estado: ' . 
+                $wooCommerceOrder->get_status() . ".\n" . 
+                'No se ejecutó captura del pago y este se debería reversar en los próximos días.'
+            );
+            return wp_safe_redirect($wooCommerceOrder->get_checkout_order_received_url());
         }
         
         $transbankSdkWebpay = new TransbankSdkWebpay($this->pluginConfig);

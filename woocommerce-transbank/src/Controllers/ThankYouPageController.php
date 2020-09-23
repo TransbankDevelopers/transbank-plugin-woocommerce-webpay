@@ -4,6 +4,7 @@ namespace Transbank\WooCommerce\Webpay\Controllers;
 
 use DateTime;
 use Transbank\WooCommerce\Webpay\TransbankWebpayOrders;
+use Transbank\WooCommerce\Webpay\Helpers\SessionMessageHelper;
 use WC_Gateway_Transbank;
 use WC_Order;
 
@@ -19,10 +20,15 @@ class ThankYouPageController
     
         $webpayTransaction = TransbankWebpayOrders::getApprovedByOrderId($orderId);
         if ($webpayTransaction === null) {
-            wc_print_notice('Transacción <strong>fallida</strong>. Puedes pagar volver a intentar el pago', 'error');
+            // TODO: Revisar porqué no se muestra el mensaje de abajo. 
+            // if (SessionMessageHelper::exists()){
+            //     SessionMessageHelper::printMessage();
+            //     return;
+            // }
+            wc_print_notice('Transacción <strong>fallida</strong>. Puedes volver a intentar el pago', 'error');
             return;
         }
-        
+
         // Transacción aprobada
         wc_print_notice('Transacción aprobada', 'success');
         
