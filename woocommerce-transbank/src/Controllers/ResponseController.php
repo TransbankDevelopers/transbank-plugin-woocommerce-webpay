@@ -105,9 +105,7 @@ class ResponseController
         $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
         $wooCommerceOrder->payment_complete();
         $final_status = $this->pluginConfig['STATUS_AFTER_PAYMENT'];
-        if ($final_status) {
-            $wooCommerceOrder->update_status($final_status);
-        }
+        
         list($authorizationCode, $amount, $sharesNumber, $transactionResponse, $paymentCodeResult, $date_accepted) = $this->getTransactionDetails($result);
         
         update_post_meta($wooCommerceOrder->get_id(), 'transactionResponse', $transactionResponse);
@@ -122,6 +120,10 @@ class ResponseController
         wc_add_notice(__('Pago recibido satisfactoriamente', 'transbank_webpay'));
         TransbankWebpayOrders::update($webpayTransaction->id,
             ['status' => TransbankWebpayOrders::STATUS_APPROVED, 'transbank_response' => json_encode($result)]);
+
+        if ($final_status) {
+            $wooCommerceOrder->update_status($final_status);
+        }
     }
     /**
      * @param WC_Order $wooCommerceOrder
