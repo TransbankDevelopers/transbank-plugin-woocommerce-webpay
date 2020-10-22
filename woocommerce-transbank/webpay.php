@@ -111,7 +111,7 @@ function woocommerce_transbank_init()
                 "URL_FINAL" => "_URL_",
                 "ECOMMERCE" => 'woocommerce',
                 "VENTA_DESC" => [
-                    "VD" => "Venta Deb&iacute;to",
+                    "VD" => "Venta D&eacute;bito",
                     "VN" => "Venta Normal",
                     "VC" => "Venta en cuotas",
                     "SI" => "3 cuotas sin inter&eacute;s",
