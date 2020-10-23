@@ -101,10 +101,6 @@ class ResponseController
      */
     protected function completeWooCommerceOrder(WC_Order $wooCommerceOrder, $result, $webpayTransaction)
     {
-        $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'transbank_webpay'));
-        $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
-        $wooCommerceOrder->payment_complete();
-        $final_status = $this->pluginConfig['STATUS_AFTER_PAYMENT'];
         
         list($authorizationCode, $amount, $sharesNumber, $transactionResponse, $paymentCodeResult, $date_accepted) = $this->getTransactionDetails($result);
         
@@ -117,10 +113,15 @@ class ResponseController
         update_post_meta($wooCommerceOrder->get_id(), 'cuotas', $sharesNumber);
         update_post_meta($wooCommerceOrder->get_id(), 'transactionDate', $date_accepted->format('d-m-Y / H:i:s'));
         
+        $wooCommerceOrder->add_order_note(__('Pago exitoso con Webpay Plus', 'transbank_webpay'));
+        $wooCommerceOrder->add_order_note(json_encode($result, JSON_PRETTY_PRINT));
+        
         wc_add_notice(__('Pago recibido satisfactoriamente', 'transbank_webpay'));
         TransbankWebpayOrders::update($webpayTransaction->id,
             ['status' => TransbankWebpayOrders::STATUS_APPROVED, 'transbank_response' => json_encode($result)]);
 
+        $wooCommerceOrder->payment_complete();
+        $final_status = $this->pluginConfig['STATUS_AFTER_PAYMENT'];
         if ($final_status) {
             $wooCommerceOrder->update_status($final_status);
         }
