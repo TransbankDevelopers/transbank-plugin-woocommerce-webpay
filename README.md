@@ -3,9 +3,15 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/transbankdevelopers/transbank-plugin-woocommerce-webpay)](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay/graphs/contributors)
 [![Build Status](https://travis-ci.org/TransbankDevelopers/transbank-plugin-woocommerce-webpay.svg?branch=master)](https://travis-ci.org/TransbankDevelopers/transbank-plugin-woocommerce-webpay)
 
+## Deprecado
+Este plugin ha sido deprecado y reemplazado por la nueva versión REST de Webpay Plus. 
+Puedes encontrar el nuevo plugin acá: [https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay-rest](https://github.com/TransbankDevelopers/transbank-plugin-woocommerce-webpay-rest)
+
+Si aún usas esta versión (SOAP) del plugin, te recomendamos cambiar lo antes posible, ya que este plugin no recibirá nuevas actualizaciones, ni mejoras. Adicionalmente, dejará de funcionar el 01 de Julio de 2022.
+
 # Transbank Woocommerce Webpay Plugin
 
-Plugin oficial de Webpay para WooCommerce
+Deprecado: Plugin oficial de Webpay para WooCommerce
 
 ## Descripción
 
