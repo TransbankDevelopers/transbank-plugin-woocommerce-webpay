@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.9] - 2023-03-01
+### Fixed
+- Se agrega una nueva versión del SDK de Transbank que cambia el certificado publico de Transbank para producción
+
 ## [2.7.8] - 2020-09-28
 ### Fixed
 - Se soluciona forma en que se verifica si la orden puede ser pagada, ahora utiliza los métodos correspondientes en el ciclo de vida de una orden
