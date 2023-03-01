@@ -6,7 +6,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 
 ## [2.7.9] - 2023-03-01
 ### Fixed
-- Se agrega una nueva versión del SDK de Transbank que cambia el certificado publico de Transbank para producción
+- Se agrega una nueva versión del SDK de Transbank que cambia el certificado publico de Transbank para producción.
 
 ## [2.7.8] - 2020-09-28
 ### Fixed
