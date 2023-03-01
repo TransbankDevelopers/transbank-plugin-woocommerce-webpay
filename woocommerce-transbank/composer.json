@@ -1,13 +1,16 @@
 {
   "require": {
-    "transbank/transbank-sdk": ">=1.5.3",
+    "transbank/transbank-sdk": "1.10.3",
     "apache/log4php":"2.3.0",
-    "tecnickcom/tcpdf": "^6.3",
+    "tecnickcom/tcpdf": "6.3",
     "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
       "Transbank\\WooCommerce\\Webpay\\": "src/"
     }
+  },
+  "config": {
+    "platform-check": false
   }
 }
